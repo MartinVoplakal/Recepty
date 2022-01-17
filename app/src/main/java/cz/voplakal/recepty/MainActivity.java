@@ -1,6 +1,7 @@
 package cz.voplakal.recepty;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -53,12 +56,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_search:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
-                        .replace(R.id.fragment_container, Recepty.class, null).commit();
+                        .replace(R.id.fragment_container, ItemFragment.class, null).commit();
                 break;
             case R.id.nav_novyRecept:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                         .replace(R.id.fragment_container, NovyRecept.class, null).commit();
                 break;
+//            case R.id.nav_test:
+//                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
+//                        .replace(R.id.fragment_container, Test.class, null).commit();
+//                break;
         }
         navigationView.setCheckedItem(item.getItemId());
         drawer.closeDrawer(GravityCompat.START);
