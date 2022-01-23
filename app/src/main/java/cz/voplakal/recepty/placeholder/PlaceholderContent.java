@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import cz.voplakal.recepty.Recept;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -16,39 +17,20 @@ public class PlaceholderContent {
     /**
      * An array of sample (placeholder) items.
      */
-    public static final List<ReceptItem> ITEMS = new ArrayList<ReceptItem>();
+    public static final List<Recept> ITEMS = new ArrayList<Recept>();
 
     /**
      * A map of sample (placeholder) items, by ID.
      */
-    public static final Map<String, ReceptItem> ITEM_MAP = new HashMap<String, ReceptItem>();
+    public static final Map<String, Recept> ITEM_MAP = new HashMap<String, Recept>();
 
 
-    public static void addItem(ReceptItem item) {
+    public static void addItem(Recept item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.nazev, item);
     }
 
-    public static ReceptItem createPlaceholderItem(String nazev, String ingredience) {
-        return new ReceptItem(nazev, ingredience);
-    }
-
-
-    /**
-     * A placeholder item representing a piece of content.
-     */
-    public static class ReceptItem {
-        public final String nazev;
-        public final String ingredience;
-
-        public ReceptItem(String nazev, String ingredience) {
-            this.nazev = nazev;
-            this.ingredience = ingredience;
-        }
-
-        @Override
-        public String toString() {
-            return ingredience;
-        }
+    public static Recept createPlaceholderItem(String nazev, String ingredience) {
+        return new Recept(nazev, ingredience);
     }
 }

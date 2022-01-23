@@ -31,9 +31,36 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView3"
+        android:name="cz.voplakal.recepty.ItemFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout="@layout/fragment_item_list"
+        tools:layout_editor_absoluteY="206dp" />
+    <!--<androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView"
+        android:name="cz.voplakal.recepty.ItemFragment"
+        android:layout_width="0dp"
+        android:layout_height="400dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inputTextSearch"
+        tools:layout="@layout/fragment_item_list" />-->
+
+    <!--<ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/layoutMargin"
@@ -45,7 +72,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/inputTextSearch"
         tools:ignore="SpeakableTextPresentCheck">
-        <!--android:layout_width="0dp"
+        &lt;!&ndash;android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/layoutMargin"
             android:layout_marginTop="24dp"
@@ -54,7 +81,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/inputTextSearch"
-            tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck"-->
+            tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck"&ndash;&gt;
 
         <LinearLayout
             android:id="@+id/ScrollLinearLayout"
@@ -71,7 +98,7 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </ScrollView>-->
 
 
 </FrameLayout>

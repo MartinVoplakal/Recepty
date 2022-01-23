@@ -5,15 +5,14 @@ import static cz.voplakal.recepty.placeholder.PlaceholderContent.createPlacehold
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import cz.voplakal.recepty.placeholder.PlaceholderContent;
 
@@ -35,6 +34,7 @@ public class ItemFragment extends Fragment {
      * fragment (e.g. upon screen orientation changes).
      */
     public ItemFragment() {
+        super(R.layout.fragment_item_list);
     }
 
     // TODO: Customize parameter initialization
@@ -78,6 +78,13 @@ public class ItemFragment extends Fragment {
         myItemRecyclerViewAdapter.clear();
         addItem(createPlaceholderItem("Psíčková", "psy"));
         addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+        addItem(createPlaceholderItem("Psíčková", "psy"));
+        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+        addItem(createPlaceholderItem("Psíčková", "psy"));
+        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+        addItem(createPlaceholderItem("Psíčková", "psy"));
+        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "konec..."));
 
         return view;
     }

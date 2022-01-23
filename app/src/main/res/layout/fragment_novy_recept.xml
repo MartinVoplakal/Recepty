@@ -13,11 +13,11 @@
         android:padding="@dimen/layoutMargin">
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/nazev_receptu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/Nazev_receptu"
-            android:inputType="textPersonName"
+            android:inputType="none"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_wrapBehaviorInParent="horizontal_only" />
@@ -28,39 +28,48 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/ingredienceLabel"
-            app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName3"
-            app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName3" />
+            app:layout_constraintBottom_toTopOf="@+id/ingredience_text"
+            app:layout_constraintStart_toStartOf="@+id/ingredience_text" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName3"
+            android:id="@+id/ingredience_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
             android:hint="@string/Ingredience"
-            android:inputType="textMultiLine"
+            android:inputType="none"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+            app:layout_constraintTop_toBottomOf="@+id/nazev_receptu" />
 
         <EditText
-            android:id="@+id/editTextTextMultiLine"
+            android:id="@+id/postup_na_pripravu_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="52dp"
             android:ems="15"
             android:gravity="start|top"
             android:hint="@string/Postup_pripravy"
-            android:inputType="textMultiLine"
+            android:inputType="none"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+            app:layout_constraintTop_toBottomOf="@+id/ingredience_text" />
 
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/Nazev_receptu"
-            app:layout_constraintBottom_toTopOf="@+id/editTextTextMultiLine"
+            android:text="@string/Postup_pripravy"
+            app:layout_constraintBottom_toTopOf="@+id/postup_na_pripravu_text"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="44dp"
+            android:text="Button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postup_na_pripravu_text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

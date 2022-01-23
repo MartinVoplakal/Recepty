@@ -39,5 +39,7 @@
     <string name="Ingredience">ingredience odělené čárkou</string>
     <string name="ingredienceLabel">Ingredience</string>
     <string name="Postup_pripravy">Postup na přípravu</string>
+    <string name="done">hotovo</string>
+    <string name="upravit">upravit</string>
 
 </resources>

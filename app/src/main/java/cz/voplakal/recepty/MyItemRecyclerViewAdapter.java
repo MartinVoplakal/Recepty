@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cz.voplakal.recepty.databinding.FragmentItemBinding;
-import cz.voplakal.recepty.placeholder.PlaceholderContent;
 
 
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
-    private final List<PlaceholderContent.ReceptItem> mValues;
+    private final List<Recept> mValues;
 
-    public MyItemRecyclerViewAdapter(List<PlaceholderContent.ReceptItem> items) {
+    public MyItemRecyclerViewAdapter(List<Recept> items) {
         mValues = items;
     }
 
@@ -42,7 +41,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
-        public PlaceholderContent.ReceptItem mItem;
+        public Recept mItem;
 
         public ViewHolder(FragmentItemBinding binding) {
             super(binding.getRoot());
@@ -58,9 +57,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public void clear() {
         int size = mValues.size();
         if (size > 0) {
-            for (int i = 0; i < size; i++) {
-                mValues.remove(0);
-            }
+            //for (int i = 0; i < size; i++) {
+          //      mValues.remove(0);
+           // }
+            mValues.clear();
+
 
             notifyItemRangeRemoved(0, size);
         }

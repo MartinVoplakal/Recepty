@@ -1,9 +1,7 @@
 package cz.voplakal.recepty;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -11,18 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
-
-import cz.voplakal.recepty.R;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static String TAG = "myDebug";
     private DrawerLayout drawer;
-    private NavigationView navigationView;
+    public static NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
                     .replace(R.id.fragment_container, Recepty.class, null).commit();
             navigationView.setCheckedItem(R.id.nav_recepty);
         }
@@ -56,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_search:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
-                        .replace(R.id.fragment_container, ItemFragment.class, null).commit();
+                        .replace(R.id.fragment_container, Recepty.class, null).commit();
                 break;
             case R.id.nav_novyRecept:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
