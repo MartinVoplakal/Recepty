@@ -1,22 +1,20 @@
 package cz.voplakal.recepty;
 
+import static cz.voplakal.recepty.MainActivity.receptyMainList;
+
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import cz.voplakal.recepty.placeholder.PlaceholderContent;
+
 
 public class Recepty extends Fragment {
 
     private final String TAG = MainActivity.TAG;
-
-    // the fragment initialization parameters
-    public static final String FRAGMENT_INPUT = "FRAGMENT_INPUT";
-    private String mParam1;
 
     public Recepty() {
         super(R.layout.fragment_recepty);
@@ -31,8 +29,11 @@ public class Recepty extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(FRAGMENT_INPUT);
-        } else mParam1 = "No input...";
+        }
+        for(Recept recept : receptyMainList) {
+            PlaceholderContent.addItem(recept);
+        }
+
     }
     /*@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

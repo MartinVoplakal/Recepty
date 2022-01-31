@@ -12,14 +12,21 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static String TAG = "myDebug";
     private DrawerLayout drawer;
     public static NavigationView navigationView;
 
+    public static ArrayList<Recept> receptyMainList = new ArrayList<Recept>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        receptyMainList.add(new Recept("Svíčková", "Svíčky...", "prostě to udělejte"));
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar2);

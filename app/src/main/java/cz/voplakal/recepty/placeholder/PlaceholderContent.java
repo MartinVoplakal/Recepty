@@ -31,6 +31,6 @@ public class PlaceholderContent {
     }
 
     public static Recept createPlaceholderItem(String nazev, String ingredience) {
-        return new Recept(nazev, ingredience);
+        return new Recept(nazev, ingredience, null);
     }
 }

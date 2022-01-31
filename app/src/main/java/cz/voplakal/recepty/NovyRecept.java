@@ -1,7 +1,9 @@
 package cz.voplakal.recepty;
 
 import static cz.voplakal.recepty.MainActivity.navigationView;
+import static cz.voplakal.recepty.MainActivity.receptyMainList;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -10,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -18,18 +19,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class NovyRecept extends Fragment {
-    private boolean onOf = false;
+ //   private boolean onOf = false;
     private Menu topMenu;
     EditText nazevReceptuView;
     EditText ingredienceView;
     EditText postupView;
-    String nazev;
-    String ingredience;
-    String postup;
+
     boolean editability = true;
     boolean novyRecept;
 
     public NovyRecept() {
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_novy_recept, container, false);
     }
 
     @Override
@@ -40,32 +47,32 @@ public class NovyRecept extends Fragment {
         postupView = getView().findViewById(R.id.postup_na_pripravu_text);
 
         if (getArguments() != null) {
+            String nazev;
+            String ingredience;
+            String postup;
+
             editability = false;
             novyRecept = false;
             nazev = getArguments().getString(Recept.NAZEV);
             ingredience = getArguments().getString(Recept.INGREDIENCE);
             postup = getArguments().getString(Recept.POSTUP);
+
+            nazevReceptuView.setText(nazev);
+            ingredienceView.setText(ingredience);
+            postupView.setText(postup);
         } else {
             editability = true;
             novyRecept = true;
         }
-
-            Button button1 = getView().findViewById(R.id.button1);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onOf = !onOf;
-            }
-        });
+//        Button button1 = getView().findViewById(R.id.button1);
+//        button1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                onOf = !onOf;
+//            }
+//        });
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_novy_recept, container, false);
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -104,7 +111,15 @@ public class NovyRecept extends Fragment {
     }
 
     private void saveRecept() {
-        System.out.println("save recept");
+        if (nazevReceptuView.getText().toString().trim().equals("")){
+            AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
+            builder.setTitle(R.string.dialogPrazdnyRecept);
+            builder.setPositiveButton("Ok", null);
+            builder.create().show();
+        }
+        receptyMainList.add(
+                new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(), postupView.getText().toString())
+        );
     }
 
     private void setEditability(boolean editability) {

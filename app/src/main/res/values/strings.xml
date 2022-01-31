@@ -41,5 +41,6 @@
     <string name="Postup_pripravy">Postup na přípravu</string>
     <string name="done">hotovo</string>
     <string name="upravit">upravit</string>
+    <string name="dialogPrazdnyRecept">Nemůžeš uložit prázdný recept!</string>
 
 </resources>

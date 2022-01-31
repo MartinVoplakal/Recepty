@@ -1,8 +1,5 @@
 package cz.voplakal.recepty;
 
-import static cz.voplakal.recepty.placeholder.PlaceholderContent.addItem;
-import static cz.voplakal.recepty.placeholder.PlaceholderContent.createPlaceholderItem;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -73,18 +70,18 @@ public class ItemFragment extends Fragment {
             myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS);
             recyclerView.setAdapter(myItemRecyclerViewAdapter);
         }
-        addItem(createPlaceholderItem("Svíčková na smetaně", "Svíčky, smetana"));
-        addItem(createPlaceholderItem("Buřtguláš", "buřty"));
-        myItemRecyclerViewAdapter.clear();
-        addItem(createPlaceholderItem("Psíčková", "psy"));
-        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-        addItem(createPlaceholderItem("Psíčková", "psy"));
-        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-        addItem(createPlaceholderItem("Psíčková", "psy"));
-        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-        addItem(createPlaceholderItem("Psíčková", "psy"));
-        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "konec..."));
+//        addItem(createPlaceholderItem("Svíčková na smetaně", "Svíčky, smetana"));
+//        addItem(createPlaceholderItem("Buřtguláš", "buřty"));
+//        myItemRecyclerViewAdapter.clear();
+//        addItem(createPlaceholderItem("Psíčková", "psy"));
+//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+//        addItem(createPlaceholderItem("Psíčková", "psy"));
+//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+//        addItem(createPlaceholderItem("Psíčková", "psy"));
+//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+//        addItem(createPlaceholderItem("Psíčková", "psy"));
+//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
+//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "konec..."));
 
         return view;
     }
