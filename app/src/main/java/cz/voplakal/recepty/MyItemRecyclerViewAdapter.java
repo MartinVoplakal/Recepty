@@ -29,8 +29,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mContentView.setText(mValues.get(position).nazev);
-        holder.mIdView.setText(mValues.get(position).ingredience);
+        holder.mContentView.setText(mValues.get(position).getNazev());
+        holder.mIdView.setText(mValues.get(position).getIngredience());
     }
 
     @Override

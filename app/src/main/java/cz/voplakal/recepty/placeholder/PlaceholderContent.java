@@ -27,7 +27,7 @@ public class PlaceholderContent {
 
     public static void addItem(Recept item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.nazev, item);
+        ITEM_MAP.put(item.getNazev(), item);
     }
 
     public static Recept createPlaceholderItem(String nazev, String ingredience) {

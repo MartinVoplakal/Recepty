@@ -1,6 +1,7 @@
 package cz.voplakal.recepty;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -22,12 +23,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static ArrayList<Recept> receptyMainList = new ArrayList<Recept>();
 
+    DatabaseHandler db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        receptyMainList.add(new Recept("Svíčková", "Svíčky...", "prostě to udělejte"));
-
-
         super.onCreate(savedInstanceState);
+        receptyMainList.add(new Recept("Svíčková", "Svíčky...", "prostě to udělejte"));
+        //  receptyMainList = loadDataFromDatabase();
+
+        db = new DatabaseHandler(this);
+
+        // Inserting Contacts
+        Log.d("MYTAG", "Inserting ..");
+        db.addRecept(new Recept("Svíčková", "Smetana", "Prostě to udělajte ;-)"));
+        //loadDataFromDatabase();
+       /* db.addContact("Ravii");
+        db.addContact("Raviii");*/
+
+        // Reading all contacts
+//        Log.d("MYTAG: ", "Reading all contacts..");
+//        List<String> contacts = db.getAllContacts();
+//
+//        for (String cn : contacts) {
+//            // Writing Contacts to log
+//            Log.d("MYTAG", cn);
+//        }
+        /*DatabaseHandlerOriginal db = new DatabaseHandlerOriginal(this);
+
+        // Inserting Contacts
+        Log.d("MYTAG", "Inserting ..");
+        db.addContact("Ravi");
+        db.addContact("Ravii");
+        db.addContact("Raviii");
+
+        // Reading all contacts
+        Log.d("MYTAG: ", "Reading all contacts..");
+        List<String> contacts = db.getAllContacts();
+
+        for (String cn : contacts) {
+            // Writing Contacts to log
+            Log.d("MYTAG", cn);
+        }
+*/
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
@@ -46,6 +84,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .replace(R.id.fragment_container, Recepty.class, null).commit();
             navigationView.setCheckedItem(R.id.nav_recepty);
         }
+    }
+
+    public void loadDataFromDatabase() {
+        receptyMainList = db.getAllRecepty();
+        receptyMainList.add(new Recept("aaa", "bbb", "ccc"));
     }
 
     @Override

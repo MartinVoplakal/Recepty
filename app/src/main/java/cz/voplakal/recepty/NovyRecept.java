@@ -1,7 +1,6 @@
 package cz.voplakal.recepty;
 
 import static cz.voplakal.recepty.MainActivity.navigationView;
-import static cz.voplakal.recepty.MainActivity.receptyMainList;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -19,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class NovyRecept extends Fragment {
- //   private boolean onOf = false;
+    //   private boolean onOf = false;
     private Menu topMenu;
     EditText nazevReceptuView;
     EditText ingredienceView;
@@ -111,15 +110,37 @@ public class NovyRecept extends Fragment {
     }
 
     private void saveRecept() {
-        if (nazevReceptuView.getText().toString().trim().equals("")){
-            AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
+        if (nazevReceptuView.getText().toString().trim().equals("")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialogPrazdnyRecept);
             builder.setPositiveButton("Ok", null);
             builder.create().show();
+        } else {
+
+//            DatabaseHandler db = ((MainActivity) getActivity()).db;
+//            db.addRecept(new Recept("Vepři knedlo zelo", "zelí", "Prostě to udělajete"));
+
+           /* SQLiteHelper dbHelper = new SQLiteHelper(getContext());
+
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            // Create a new map of values, where column names are the keys
+            ContentValues values = new ContentValues();
+            //    values.put("_id", 11);  //nazevReceptuView.getText().toString()
+            //    values.put(COLUMN_NAME_NAZEV, "Ahoj");  //nazevReceptuView.getText().toString()
+            //    values.put(COLUMN_NAME_INGREDIENCE, ingredienceView.getText().toString());
+            values.put(COLUMN_NAME_POSTUP, postupView.getText().toString());
+
+// Insert the new row, returning the primary key value of the new row
+            long newRowId = db.insert(TABLE_NAME, null, values);
+            db.close();*/
+//            receptyMainList.add(
+//                    new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(), postupView.getText().toString())
+//            );
+
+        //    ((MainActivity) getActivity()).loadDataFromDatabase();    LOAD
+
+
         }
-        receptyMainList.add(
-                new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(), postupView.getText().toString())
-        );
     }
 
     private void setEditability(boolean editability) {
