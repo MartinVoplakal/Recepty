@@ -20,8 +20,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     public static NavigationView navigationView;
     public static ReceptyArrayList<Recept> receptyMainList = new ReceptyArrayList();
-    //public static ArrayList<Recept> receptyMainList = new ArrayList<Recept>();
-
     DatabaseHandler db;
 
     /**
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        receptyMainList.add(new Recept("Zatím žádné recepty k zobrazení.", "Svíčky...", "prostě to udělejte"));
         //  receptyMainList = loadDataFromDatabase();
 
         db = new DatabaseHandler(this);
@@ -103,9 +100,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_recepty:
-                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
-                        .replace(R.id.fragment_container, Recepty.class, null).commit();
-                break;
             case R.id.nav_search:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                         .replace(R.id.fragment_container, Recepty.class, null).commit();

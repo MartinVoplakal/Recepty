@@ -45,7 +45,6 @@ public class ItemListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -65,7 +64,15 @@ public class ItemListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(MainActivity.receptyMainList);
+            if (MainActivity.receptyMainList.isEmpty()) {
+                ReceptyArrayList emptyMessageList = new ReceptyArrayList<Recept>();
+                emptyMessageList.add(
+                        new Recept(getContext().getResources().getString(R.string.emptyName),
+                                getContext().getResources().getString(R.string.emptyIngredience), null));
+                myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(emptyMessageList, getParentFragment().getParentFragmentManager());
+
+            } else
+                myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(MainActivity.receptyMainList, getParentFragment().getParentFragmentManager());
             recyclerView.setAdapter(myItemRecyclerViewAdapter);
         }
 //        addItem(createPlaceholderItem("Svíčková na smetaně", "Svíčky, smetana"));

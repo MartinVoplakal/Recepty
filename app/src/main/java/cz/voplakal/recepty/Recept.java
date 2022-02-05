@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Recept {
+    public static final String ID = "recept_ID";
     public static final String NAZEV = "recept_NAZEV";
     public static final String INGREDIENCE = "recept_INGREDIENCE";
     public static final String POSTUP = "recept_POPIS";
@@ -20,11 +21,12 @@ public class Recept {
         this.ingredience = ingredience;
         this.postup = postup;
     }
-    public Recept(int id, String nazev, String ingredience, String postup) {
+    public Recept(String nazev, String ingredience, String postup, int id) {
         this(nazev, ingredience, postup);
         this.id = id;
     }
     public Recept(Cursor cursor) {
+        this.id = cursor.getInt(0);
         this.nazev = cursor.getString(0);
         this.ingredience = cursor.getString(1);
         this.postup = cursor.getString(2);

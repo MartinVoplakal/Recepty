@@ -42,5 +42,8 @@
     <string name="done">hotovo</string>
     <string name="upravit">upravit</string>
     <string name="dialogPrazdnyRecept">Nemůžeš uložit prázdný recept!</string>
+    <string name="emptyName">Zatím tu nejsou žádně recepty</string>
+    <string name="emptyIngredience">Můžeš nějaké přidat...</string>
+    <string name="loading">Načítání...</string>
 
 </resources>

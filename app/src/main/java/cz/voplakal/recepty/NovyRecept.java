@@ -98,8 +98,7 @@ public class NovyRecept extends Fragment {
                         R.anim.fade_out,  // exit
                         R.anim.fade_in,   // popEnter
                         R.anim.slide_out  // popExit
-                ).addToBackStack(null)
-                        .replace(R.id.fragment_container, Recepty.class, null).commit();
+                ).replace(R.id.fragment_container, Recepty.class, null).commit();
                 navigationView.setCheckedItem(R.id.nav_recepty);
                 break;
             case R.id.menu_edit:
@@ -112,6 +111,7 @@ public class NovyRecept extends Fragment {
 
     private void saveRecept() {
         if (nazevReceptuView.getText().toString().trim().equals("")) {
+                //https://www.javatpoint.com/android-alert-dialog-example
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialogPrazdnyRecept);
             builder.setPositiveButton("Ok", null);
@@ -135,7 +135,8 @@ public class NovyRecept extends Fragment {
             long newRowId = db.insert(TABLE_NAME, null, values);
             db.close();*/
             receptyMainList.add(
-                    new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(), postupView.getText().toString())
+                    new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
+                            postupView.getText().toString(), (int) Math.floor(Math.random() * 10000))
             );
 
         //    ((MainActivity) getActivity()).loadDataFromDatabase();    LOAD
