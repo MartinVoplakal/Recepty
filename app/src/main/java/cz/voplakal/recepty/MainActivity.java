@@ -1,5 +1,6 @@
 package cz.voplakal.recepty;
 
+import android.app.AppComponentFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,22 +14,29 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.ArrayList;
-
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static String TAG = "myDebug";
     private DrawerLayout drawer;
     public static NavigationView navigationView;
-
-    public static ArrayList<Recept> receptyMainList = new ArrayList<Recept>();
+    public static ReceptyArrayList<Recept> receptyMainList = new ReceptyArrayList();
+    //public static ArrayList<Recept> receptyMainList = new ArrayList<Recept>();
 
     DatabaseHandler db;
+
+    /**
+     * Default constructor for AppCompatActivity. All Activities must have a default constructor
+     * for API 27 and lower devices or when using the default
+     * {@link AppComponentFactory}.
+     */
+    public MainActivity() {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        receptyMainList.add(new Recept("Svíčková", "Svíčky...", "prostě to udělejte"));
+        receptyMainList.add(new Recept("Zatím žádné recepty k zobrazení.", "Svíčky...", "prostě to udělejte"));
         //  receptyMainList = loadDataFromDatabase();
 
         db = new DatabaseHandler(this);

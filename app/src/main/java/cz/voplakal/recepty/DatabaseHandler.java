@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
-
 public class DatabaseHandler extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Recepty.db";
@@ -75,8 +73,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // code to get all contacts in a list view
-    public ArrayList<Recept> getAllRecepty() {
-        ArrayList<Recept> contactList = new ArrayList<>();
+    public ReceptyArrayList<Recept> getAllRecepty() {
+        ReceptyArrayList<Recept> contactList = new ReceptyArrayList<>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_RECEPTY;
 

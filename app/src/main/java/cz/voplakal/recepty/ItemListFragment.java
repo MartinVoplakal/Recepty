@@ -11,12 +11,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import cz.voplakal.recepty.placeholder.PlaceholderContent;
-
 /**
  * A fragment representing a list of Items.
  */
-public class ItemFragment extends Fragment {
+public class ItemListFragment extends Fragment {
 
     //moje
     MyItemRecyclerViewAdapter myItemRecyclerViewAdapter;
@@ -30,7 +28,7 @@ public class ItemFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public ItemFragment() {
+    public ItemListFragment() {
         super(R.layout.fragment_item_list);
     }
 
@@ -67,7 +65,7 @@ public class ItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS);
+            myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(MainActivity.receptyMainList);
             recyclerView.setAdapter(myItemRecyclerViewAdapter);
         }
 //        addItem(createPlaceholderItem("Svíčková na smetaně", "Svíčky, smetana"));

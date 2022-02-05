@@ -38,6 +38,18 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         return mValues.size();
     }
 
+    public void clear() {
+        int size = mValues.size();
+        if (size > 0) {
+            //for (int i = 0; i < size; i++) {
+          //      mValues.remove(0);
+           // }
+            mValues.clear();
+
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
@@ -52,18 +64,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
-        }
-    }
-    public void clear() {
-        int size = mValues.size();
-        if (size > 0) {
-            //for (int i = 0; i < size; i++) {
-          //      mValues.remove(0);
-           // }
-            mValues.clear();
-
-
-            notifyItemRangeRemoved(0, size);
         }
     }
 }

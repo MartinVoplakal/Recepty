@@ -1,6 +1,7 @@
 package cz.voplakal.recepty;
 
 import static cz.voplakal.recepty.MainActivity.navigationView;
+import static cz.voplakal.recepty.MainActivity.receptyMainList;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -133,9 +134,9 @@ public class NovyRecept extends Fragment {
 // Insert the new row, returning the primary key value of the new row
             long newRowId = db.insert(TABLE_NAME, null, values);
             db.close();*/
-//            receptyMainList.add(
-//                    new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(), postupView.getText().toString())
-//            );
+            receptyMainList.add(
+                    new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(), postupView.getText().toString())
+            );
 
         //    ((MainActivity) getActivity()).loadDataFromDatabase();    LOAD
 

@@ -37,7 +37,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView3"
-        android:name="cz.voplakal.recepty.ItemFragment"
+        android:name="cz.voplakal.recepty.ItemListFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="90dp"
@@ -47,7 +47,7 @@
         tools:layout_editor_absoluteY="206dp" />
     <!--<androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="cz.voplakal.recepty.ItemFragment"
+        android:name="cz.voplakal.recepty.ItemListFragment"
         android:layout_width="0dp"
         android:layout_height="400dp"
         android:layout_marginStart="24dp"
