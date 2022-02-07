@@ -1,6 +1,11 @@
 package cz.voplakal.recepty;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Helper class for providing sample content for user interfaces created by
@@ -8,22 +13,59 @@ import java.util.ArrayList;
  * <p>
  * TODO: Replace all uses of this class before publishing your app.
  */
-public class ReceptyArrayList<Recept> extends ArrayList<Recept>{
+public class ReceptyArrayList<Recept> extends ArrayList<Recept> {
+    private MyItemRecyclerViewAdapter adapter;
+    private Context context;
 
-    /**
-     * An array of sample (placeholder) items.
-     */
-   // public static final List<Recept> ITEMS = new ArrayList<Recept>();
+    public ReceptyArrayList(int initialCapacity, MyItemRecyclerViewAdapter adapter, Context context) {
+        super(initialCapacity);
+        this.adapter = adapter;
+        this.context = context;
+    }
 
-    /**
-     * A map of sample (placeholder) items, by ID.
-     */
-  //  public static final Map<String, Recept> ITEM_MAP = new HashMap<String, Recept>();     Default unused
+    public ReceptyArrayList(MyItemRecyclerViewAdapter adapter, Context context) {
+        this.adapter = adapter;
+        this.context = context;
+    }
+
+    public ReceptyArrayList(@NonNull Collection<? extends Recept> c, MyItemRecyclerViewAdapter adapter, Context context) {
+        super(c);
+        this.adapter = adapter;
+        this.context = context;
+    }
+
+    @Deprecated
+    public ReceptyArrayList() {
+        throw new UnsupportedOperationException("Use other constructor");
+    }
+
+    public ReceptyArrayList(Context context) {
+        super();
+        this.context = context;
+    }
+
+    public void setAdapter(MyItemRecyclerViewAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    public void clear(boolean notify) {
+        int size = size();
+        super.clear();
+        if (adapter != null && notify)
+            adapter.notifyItemRangeRemoved(0, size);
+        //adapter.notifyDataSetChanged();
+    }
 
 
-  //  public void addItem(Recept item) {
-//        ITEMS.add(item);
-//        ITEM_MAP.put(item.getNazev(), item);
-  //  }
+    @Override
+    public boolean addAll(@NonNull Collection<? extends Recept> c) {
+        boolean r = super.addAll(c);
+      //  adapter.notifyDataSetChanged();
+        return r;
+    }
+    public void notifyDataSetChanged() {
+        if (adapter == null) throw new UnsupportedOperationException("Adapter is null. First set it setAdapter(...)");
+        adapter.notifyDataSetChanged();
+    }
 
 }

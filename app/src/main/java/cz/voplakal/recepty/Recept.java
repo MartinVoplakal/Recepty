@@ -1,6 +1,9 @@
 package cz.voplakal.recepty;
 
-import static cz.voplakal.recepty.DatabaseHandler.*;
+import static cz.voplakal.recepty.DatabaseHandler.ID_KEY;
+import static cz.voplakal.recepty.DatabaseHandler.INGREDIENCE_KEY;
+import static cz.voplakal.recepty.DatabaseHandler.NAZEV_KEY;
+import static cz.voplakal.recepty.DatabaseHandler.POSTUP_KEY;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -11,7 +14,7 @@ public class Recept {
     public static final String INGREDIENCE = "recept_INGREDIENCE";
     public static final String POSTUP = "recept_POPIS";
 
-    private int id; //optional
+    private long id; //optional
     private String nazev;
     private String ingredience;
     private String postup;
@@ -21,26 +24,30 @@ public class Recept {
         this.ingredience = ingredience;
         this.postup = postup;
     }
-    public Recept(String nazev, String ingredience, String postup, int id) {
+
+    public Recept(String nazev, String ingredience, String postup, long id) {
         this(nazev, ingredience, postup);
         this.id = id;
     }
+
     public Recept(Cursor cursor) {
         this.id = cursor.getInt(0);
-        this.nazev = cursor.getString(0);
-        this.ingredience = cursor.getString(1);
-        this.postup = cursor.getString(2);
+        this.nazev = cursor.getString(1);
+        this.ingredience = cursor.getString(2);
+        this.postup = cursor.getString(3);
     }
 
-    public ContentValues insertIn(ContentValues values) {
+    public ContentValues insertIn(ContentValues values, boolean withId) {
         values.put(NAZEV_KEY, this.getNazev());
         values.put(INGREDIENCE_KEY, this.getIngredience());
         values.put(POSTUP_KEY, this.getPostup());
+        if (withId)
+            values.put(ID_KEY, this.getId());
         return values;
     }
 
-    public int getId() {
-        return (id);
+    public long getId() {
+        return id;
     }
 
     public void setNazev(String nazev) {

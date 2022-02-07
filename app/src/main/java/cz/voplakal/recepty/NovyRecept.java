@@ -1,11 +1,12 @@
 package cz.voplakal.recepty;
 
+import static cz.voplakal.recepty.MainActivity.TAG;
 import static cz.voplakal.recepty.MainActivity.navigationView;
-import static cz.voplakal.recepty.MainActivity.receptyMainList;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +28,8 @@ public class NovyRecept extends Fragment {
 
     boolean editability = true;
     boolean novyRecept;
+    long idReceptu;
+
 
     public NovyRecept() {
     }
@@ -42,24 +45,29 @@ public class NovyRecept extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d(TAG, "onViewCreated: novyrecept");
         nazevReceptuView = getView().findViewById(R.id.nazev_receptu);
         ingredienceView = getView().findViewById(R.id.ingredience_text);
         postupView = getView().findViewById(R.id.postup_na_pripravu_text);
+        if (ingredienceView == null) System.exit(0);
+        //setEditability(editability);
+
 
         if (getArguments() != null) {
-            String nazev;
-            String ingredience;
-            String postup;
-
             editability = false;
             novyRecept = false;
-            nazev = getArguments().getString(Recept.NAZEV);
-            ingredience = getArguments().getString(Recept.INGREDIENCE);
-            postup = getArguments().getString(Recept.POSTUP);
+            String nazev = getArguments().getString(Recept.NAZEV);
+            String ingredience = getArguments().getString(Recept.INGREDIENCE);
+            String postup = getArguments().getString(Recept.POSTUP);
+            idReceptu = getArguments().getLong(Recept.ID);
 
             nazevReceptuView.setText(nazev);
             ingredienceView.setText(ingredience);
             postupView.setText(postup);
+
+            //potom ve vlákně
+            Recept receptDB = ((MainActivity) getActivity()).db.getRecept(idReceptu);
+            postupView.setText(receptDB.getPostup());
         } else {
             editability = true;
             novyRecept = true;
@@ -77,12 +85,14 @@ public class NovyRecept extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: novyrecept");
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         //  super.onCreateOptionsMenu(menu, inflater);
+        Log.d(TAG, "onCreateOptionsMenu: onCreateOptionsMenu");
         inflater.inflate(R.menu.edit, menu);
 
     }
@@ -105,47 +115,53 @@ public class NovyRecept extends Fragment {
             case R.id.menu_edit_text:
                 setEditability(true);
                 break;
+            case R.id.menu_trash:
+                deleteRecept();
+                getParentFragmentManager().beginTransaction().setReorderingAllowed(true).setCustomAnimations(
+                        R.anim.slide_in,  // enter
+                        R.anim.fade_out,  // exit
+                        R.anim.fade_in,   // popEnter
+                        R.anim.slide_out  // popExit
+                ).replace(R.id.fragment_container, Recepty.class, null).commit();
+                navigationView.setCheckedItem(R.id.nav_recepty);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void deleteRecept() {
+        if (!novyRecept) {
+            DatabaseHandler db = ((MainActivity) getActivity()).db;
+            db.deleteRecept(idReceptu);
+        }
+        ((MainActivity) getActivity()).loadAndApplyData();
+    }
+
     private void saveRecept() {
         if (nazevReceptuView.getText().toString().trim().equals("")) {
-                //https://www.javatpoint.com/android-alert-dialog-example
+            //https://www.javatpoint.com/android-alert-dialog-example
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialogPrazdnyRecept);
             builder.setPositiveButton("Ok", null);
             builder.create().show();
         } else {
+            DatabaseHandler db = ((MainActivity) getActivity()).db;
+            if (novyRecept)
+                db.addRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
+                        postupView.getText().toString()));
+            else
+                db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
+                        postupView.getText().toString(), idReceptu));
 
-//            DatabaseHandler db = ((MainActivity) getActivity()).db;
-//            db.addRecept(new Recept("Vepři knedlo zelo", "zelí", "Prostě to udělajete"));
-
-           /* SQLiteHelper dbHelper = new SQLiteHelper(getContext());
-
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            // Create a new map of values, where column names are the keys
-            ContentValues values = new ContentValues();
-            //    values.put("_id", 11);  //nazevReceptuView.getText().toString()
-            //    values.put(COLUMN_NAME_NAZEV, "Ahoj");  //nazevReceptuView.getText().toString()
-            //    values.put(COLUMN_NAME_INGREDIENCE, ingredienceView.getText().toString());
-            values.put(COLUMN_NAME_POSTUP, postupView.getText().toString());
-
+            ((MainActivity) getActivity()).loadAndApplyData();
 // Insert the new row, returning the primary key value of the new row
-            long newRowId = db.insert(TABLE_NAME, null, values);
+ /*           long newRowId = db.insert(TABLE_RECEPTY, null, values);
             db.close();*/
-            receptyMainList.add(
-                    new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
-                            postupView.getText().toString(), (int) Math.floor(Math.random() * 10000))
-            );
-
-        //    ((MainActivity) getActivity()).loadDataFromDatabase();    LOAD
-
-
         }
     }
 
     private void setEditability(boolean editability) {
+        Log.d(TAG, "setEditability:");
         topMenu.findItem(R.id.menu_done).setVisible(editability);
         topMenu.findItem(R.id.menu_done_text).setVisible(editability);
         topMenu.findItem(R.id.menu_edit).setVisible(!editability);
@@ -166,9 +182,9 @@ public class NovyRecept extends Fragment {
     //skrytií určitého prvku horní nadídky...
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu: novyrecept");
         topMenu = menu;
         super.onPrepareOptionsMenu(menu);
         setEditability(editability);
-
     }
 }

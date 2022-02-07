@@ -16,10 +16,10 @@ import com.google.android.material.navigation.NavigationView;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static String TAG = "myDebug";
+    public static String TAG = "MYTAG";
     private DrawerLayout drawer;
     public static NavigationView navigationView;
-    public static ReceptyArrayList<Recept> receptyMainList = new ReceptyArrayList();
+    public static ReceptyArrayList<Recept> receptyMainList;
     DatabaseHandler db;
 
     /**
@@ -28,48 +28,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * {@link AppComponentFactory}.
      */
     public MainActivity() {
-
+        receptyMainList = new ReceptyArrayList<Recept>(this);
+        Log.d(TAG, "MainActivity: Activity Constructor");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "Activity onCreate");
         //  receptyMainList = loadDataFromDatabase();
-
+//        if (receptyMainList == null)
+//            receptyMainList = new ReceptyArrayList<Recept>(this);
         db = new DatabaseHandler(this);
-
-        // Inserting Contacts
-        Log.d("MYTAG", "Inserting ..");
-        db.addRecept(new Recept("Svíčková", "Smetana", "Prostě to udělajte ;-)"));
-        //loadDataFromDatabase();
-       /* db.addContact("Ravii");
-        db.addContact("Raviii");*/
-
-        // Reading all contacts
-//        Log.d("MYTAG: ", "Reading all contacts..");
-//        List<String> contacts = db.getAllContacts();
-//
-//        for (String cn : contacts) {
-//            // Writing Contacts to log
-//            Log.d("MYTAG", cn);
-//        }
-        /*DatabaseHandlerOriginal db = new DatabaseHandlerOriginal(this);
-
-        // Inserting Contacts
-        Log.d("MYTAG", "Inserting ..");
-        db.addContact("Ravi");
-        db.addContact("Ravii");
-        db.addContact("Raviii");
-
-        // Reading all contacts
-        Log.d("MYTAG: ", "Reading all contacts..");
-        List<String> contacts = db.getAllContacts();
-
-        for (String cn : contacts) {
-            // Writing Contacts to log
-            Log.d("MYTAG", cn);
-        }
-*/
+        db.deleteAll();
+        loadAndApplyData();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar2);
@@ -89,11 +61,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .replace(R.id.fragment_container, Recepty.class, null).commit();
             navigationView.setCheckedItem(R.id.nav_recepty);
         }
+        //navigationView.setCheckedItem(getSupportFragmentManager().getFragments().get(0).getId());
     }
 
-    public void loadDataFromDatabase() {
-        receptyMainList = db.getAllRecepty();
-        receptyMainList.add(new Recept("aaa", "bbb", "ccc"));
+    public void loadAndApplyData() {
+        receptyMainList.clear();
+        receptyMainList.addAll(db.getAllRecepty());
+        if(receptyMainList.isEmpty()) receptyMainList.add(
+                new Recept(this.getResources().getString(R.string.emptyName),
+                        this.getResources().getString(R.string.emptyIngredience), null, -1)); //id out of range to deactivate onclick
     }
 
     @Override

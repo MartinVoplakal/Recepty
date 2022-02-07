@@ -1,7 +1,6 @@
 package cz.voplakal.recepty;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             // }
             mValues.clear();
 
-            notifyItemRangeRemoved(0, size);
+
         }
     }
 
@@ -59,25 +58,27 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView nazevView;
         public final TextView ingredienceView;
-        public int id;
+        public long id;
         FragmentManager fragmentManager1;
 
         public ViewHolder(FragmentItemBinding binding) {
             super(binding.getRoot());
             nazevView = binding.itemNazevReceptu;
             ingredienceView = binding.itemIngredience;
-
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("ONCLICK", v.toString());
-                    Bundle b = new Bundle();
-                    b.putInt(Recept.ID, id);
-                    b.putString(Recept.NAZEV, nazevView.getText().toString());
-                    b.putString(Recept.INGREDIENCE, ingredienceView.getText().toString());
-                    b.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
-                    fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
-                            .replace(R.id.fragment_container, NovyRecept.class, b).commit();
+                    if (id >= 0) {
+                        Bundle bundle = new Bundle();
+                        bundle.putLong(Recept.ID, id);
+                        bundle.putString(Recept.NAZEV, nazevView.getText().toString());
+                        bundle.putString(Recept.INGREDIENCE, ingredienceView.getText().toString());
+                        bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
+                        fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
+                                .replace(R.id.fragment_container, NovyRecept.class, bundle).commit();
+                    } else
+                        fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
+                                .replace(R.id.fragment_container, NovyRecept.class, null).commit();
                 }
             });
         }

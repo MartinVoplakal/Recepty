@@ -64,15 +64,9 @@ public class ItemListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            if (MainActivity.receptyMainList.isEmpty()) {
-                ReceptyArrayList emptyMessageList = new ReceptyArrayList<Recept>();
-                emptyMessageList.add(
-                        new Recept(getContext().getResources().getString(R.string.emptyName),
-                                getContext().getResources().getString(R.string.emptyIngredience), null));
-                myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(emptyMessageList, getParentFragment().getParentFragmentManager());
 
-            } else
-                myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(MainActivity.receptyMainList, getParentFragment().getParentFragmentManager());
+            myItemRecyclerViewAdapter = new MyItemRecyclerViewAdapter(MainActivity.receptyMainList, getParentFragment().getParentFragmentManager());
+            MainActivity.receptyMainList.setAdapter(myItemRecyclerViewAdapter);
             recyclerView.setAdapter(myItemRecyclerViewAdapter);
         }
 //        addItem(createPlaceholderItem("Svíčková na smetaně", "Svíčky, smetana"));

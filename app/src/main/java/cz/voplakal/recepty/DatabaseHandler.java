@@ -6,17 +6,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+
 public class DatabaseHandler extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    Context context;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "Recepty.db";
     public static final String TABLE_RECEPTY = "recepty";
-    public static final String KEY_ID = "id";
+    public static final String ID_KEY = "id";
     public static final String NAZEV_KEY = "nazev";
     public static final String INGREDIENCE_KEY = "ingredience";
     public static final String POSTUP_KEY = "postup";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
         //3rd argument to be passed is CursorFactory instance
     }
 
@@ -24,7 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_RECEPTY + "("
-                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + ID_KEY + " INTEGER PRIMARY KEY,"
                 + NAZEV_KEY + " TEXT,"
                 + INGREDIENCE_KEY + " TEXT,"
                 + POSTUP_KEY + " TEXT" + ")";
@@ -40,18 +44,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // Create tables again
         onCreate(db);
     }
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-        onUpgrade(db, 0, 0);
-    }
+
 
     // code to add the new contact
     void addRecept(Recept recept) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        recept.insertIn(values);
+        recept.insertIn(values, false);
 
         // Inserting Row
         db.insert(TABLE_RECEPTY, null, values);
@@ -60,11 +60,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // code to get the single contact
-    Recept getRecept(int id) {
+    Recept getRecept(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_RECEPTY, new String[] { KEY_ID,
-                        NAZEV_KEY, POSTUP_KEY}, KEY_ID + "=?",
+        Cursor cursor = db.query(TABLE_RECEPTY, new String[] {ID_KEY,
+                        NAZEV_KEY, INGREDIENCE_KEY, POSTUP_KEY}, ID_KEY + "=?",
                 new String[] { String.valueOf(id) }, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
@@ -73,8 +73,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // code to get all contacts in a list view
-    public ReceptyArrayList<Recept> getAllRecepty() {
-        ReceptyArrayList<Recept> contactList = new ReceptyArrayList<>();
+    public ArrayList<Recept> getAllRecepty() {
+        ArrayList<Recept> list = new ArrayList<>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_RECEPTY;
 
@@ -88,31 +88,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                Log.d("MYTAG", cursor.getString(1));
 //                Log.d("MYTAG", cursor.getString(2));
                 // Adding contact to list
-                contactList.add(new Recept(cursor));
+                list.add(new Recept(cursor));
             } while (cursor.moveToNext());
         }
-        // return contact list
-        return contactList;
+
+        return list;
     }
 
     // code to update the single contact
-    public int updateContact(Recept recept) {
+    public int updateRecept(Recept recept) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        recept.insertIn(values);
+        recept.insertIn(values, true);
 
         // updating row
-        return db.update(TABLE_RECEPTY, values, KEY_ID + " = ?",
+        return db.update(TABLE_RECEPTY, values, ID_KEY + " = ?",
                 new String[] { String.valueOf(recept.getId()) });
     }
 
     // Deleting single contact
-    public void deleteContact(Recept recept) {
+    public void deleteRecept(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_RECEPTY, KEY_ID + " = ?",
-                new String[] { String.valueOf(recept.getId()) });
+        db.delete(TABLE_RECEPTY, ID_KEY + " = ?",
+                new String[] { String.valueOf(id) });
         db.close();
+    }
+    public void deleteAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEPTY);
+
+        // Create tables again
+        onCreate(db);
     }
 
     // Getting contacts Count
