@@ -147,8 +147,8 @@ public class NovyRecept extends Fragment {
         } else {
             DatabaseHandler db = ((MainActivity) getActivity()).db;
             if (novyRecept)
-                db.addRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
-                        postupView.getText().toString()));
+                db.addRecept(new Recept(nazevReceptuView.getText().toString().trim(), ingredienceView.getText().toString().trim(),
+                        postupView.getText().toString().trim()));
             else
                 db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
                         postupView.getText().toString(), idReceptu));
@@ -172,10 +172,12 @@ public class NovyRecept extends Fragment {
             nazevReceptuView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
             ingredienceView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
             postupView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            //postupView.setEnabled(false);
         } else {
             nazevReceptuView.setInputType(InputType.TYPE_NULL);
             ingredienceView.setInputType(InputType.TYPE_NULL);
             postupView.setInputType(InputType.TYPE_NULL);
+            // postupView.setEnabled(false);
         }
     }
 

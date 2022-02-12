@@ -39,8 +39,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //  receptyMainList = loadDataFromDatabase();
 //        if (receptyMainList == null)
 //            receptyMainList = new ReceptyArrayList<Recept>(this);
+
         db = new DatabaseHandler(this);
-        db.deleteAll();
+     //   db.deleteAll();
         loadAndApplyData();
 
         setContentView(R.layout.activity_main);

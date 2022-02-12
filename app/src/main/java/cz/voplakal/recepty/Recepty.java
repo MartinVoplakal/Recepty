@@ -1,13 +1,16 @@
 package cz.voplakal.recepty;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 
@@ -31,7 +34,55 @@ public class Recepty extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "Recepty fragment onViewCreated");
         searchView = (EditText) getView().findViewById(R.id.inputTextSearch);
-        searchView.setImeActionLabel("Custom text", KeyEvent.KEYCODE_NAVIGATE_NEXT);
+        // searchView.setImeActionLabel("Custom text", KeyEvent.KEYCODE_NAVIGATE_NEXT);
+        searchView.addTextChangedListener(new TextWatcher() {
+            long lastCheck = System.currentTimeMillis();
+            String lastFilter = "";
+
+            //povinné metody
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d("TChanged", "afterTextChanged: ");
+                if (System.currentTimeMillis() - lastCheck > 10) {
+               //     Thread t = new Thread(() -> {
+                        String newFilter = searchView.getText().toString().toLowerCase().trim();
+
+                        if (lastFilter.length() < newFilter.length() && newFilter.contains(lastFilter)) {
+                            Log.d(TAG, "filter... ");
+                            MainActivity.receptyMainList.filter(newFilter);
+                            //MainActivity.receptyMainList.removeIf(recept -> !(recept.getNazev().toLowerCase().contains(newFilter)
+                            //        || recept.getIngredience().toLowerCase().contains(newFilter)));
+                        } else {
+                            System.out.println("recovrey");
+                            MainActivity.receptyMainList.restoreDatabse();
+                            MainActivity.receptyMainList.filter(newFilter);
+                        }
+                        lastFilter = newFilter;
+
+                    System.out.println(MainActivity.receptyMainList.toString());
+
+                        //notify dataSetChanged() musí být voláno v "originálním" vlákně jinak:
+                        //      android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
+                        getActivity().runOnUiThread(() -> {
+                            MainActivity.receptyMainList.notifyDataSetChanged();
+                        });
+
+                       // Thread.yield();
+                 //   });
+                 //   t.run();          //POZOR PAK ZMĚNIT NA STADARTNÍ PUŠTĚNÍ VLÁKNA start()
+                }
+                lastCheck = System.currentTimeMillis();
+            }
+        });
 
 
     }
