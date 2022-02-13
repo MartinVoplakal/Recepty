@@ -38,6 +38,7 @@ public class Recepty extends Fragment {
         searchView.addTextChangedListener(new TextWatcher() {
             long lastCheck = System.currentTimeMillis();
             String lastFilter = "";
+            Thread lastThread;
 
             //povinné metody
             @Override
@@ -52,8 +53,11 @@ public class Recepty extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d("TChanged", "afterTextChanged: ");
-                if (System.currentTimeMillis() - lastCheck > 10) {
-               //     Thread t = new Thread(() -> {
+                if (System.currentTimeMillis() - lastCheck > 0) {
+                    lastCheck = System.currentTimeMillis();
+
+                    if (lastThread != null) lastThread.interrupt();
+                    lastThread = new Thread(() -> {
                         String newFilter = searchView.getText().toString().toLowerCase().trim();
 
                         if (lastFilter.length() < newFilter.length() && newFilter.contains(lastFilter)) {
@@ -66,9 +70,13 @@ public class Recepty extends Fragment {
                             MainActivity.receptyMainList.restoreDatabse();
                             MainActivity.receptyMainList.filter(newFilter);
                         }
-                        lastFilter = newFilter;
+                        if (Thread.currentThread().isInterrupted()) {
+                            Log.d("interr",Thread.currentThread().getName() + " is Interrupted.............................");
+                            return;
+                        } else lastFilter = newFilter;
 
-                    System.out.println(MainActivity.receptyMainList.toString());
+
+                        System.out.println(MainActivity.receptyMainList.toString());
 
                         //notify dataSetChanged() musí být voláno v "originálním" vlákně jinak:
                         //      android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
@@ -76,11 +84,10 @@ public class Recepty extends Fragment {
                             MainActivity.receptyMainList.notifyDataSetChanged();
                         });
 
-                       // Thread.yield();
-                 //   });
-                 //   t.run();          //POZOR PAK ZMĚNIT NA STADARTNÍ PUŠTĚNÍ VLÁKNA start()
+                        //  Thread.yield();
+                    });
+                    lastThread.start();         //POZOR PAK ZMĚNIT NA STADARTNÍ PUŠTĚNÍ VLÁKNA start()
                 }
-                lastCheck = System.currentTimeMillis();
             }
         });
 

@@ -1,9 +1,11 @@
 package cz.voplakal.recepty;
 
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +76,7 @@ public class ReceptyArrayList<Type extends Recept> extends ArrayList<Type> {
     public boolean remove(@Nullable Object o) {
         removedItemsList.add(o);
         boolean r = super.remove(o);
-      //  adapter.notifyItemRemoved(indexOf(o));
+        //  adapter.notifyItemRemoved(indexOf(o));
         return r;
     }
 
@@ -93,10 +95,25 @@ public class ReceptyArrayList<Type extends Recept> extends ArrayList<Type> {
 
     public synchronized void filter(String filter) {
         System.out.println("method filter with parm: " + filter);
-        //  for (Type recept : this) {
-     /*   for (int i = 0; i < size(); i++) {
+      /*  int maxCislo = 15000;
+        System.out.println(2);
+        outerfor:
+        for (int i = 3; i < maxCislo; i += 2) {       // test zpomalení
+            boolean prvocislo = true;
+            for (int j = 3; j < i && prvocislo; j++) {
+                if (Thread.currentThread().isInterrupted()) break outerfor;
+                if (i % j == 0) {
+                    prvocislo = false;
+                }
+            }
+            if (prvocislo) {
+                System.out.println(i);
+            }
+
+        }*/
+        //   Log.d("interr", "filter: interr " + Thread.currentThread().getName());
+      /*  for (int i = 0; i < size(); i++) {        !!! NEJDE, VYSVĚTLIT V DOKUMENTACI
             Recept recept = get(i);
-            System.out.println("for: " + recept.getNazev());
             if (recept.getNazev().toLowerCase().contains(filter)
                     || recept.getIngredience().toLowerCase().contains(filter));
             else {
@@ -107,8 +124,10 @@ public class ReceptyArrayList<Type extends Recept> extends ArrayList<Type> {
         Iterator<Recept> it = (Iterator<Recept>) iterator();
         while (it.hasNext()) {
             Recept recept = it.next();
+            if(Thread.currentThread().isInterrupted()) return;
+
             if (recept.getNazev().toLowerCase().contains(filter)
-                    || recept.getIngredience().toLowerCase().contains(filter));
+                    || recept.getIngredience().toLowerCase().contains(filter)) ;
             else {
                 //MUSÍ SE PŘIDAT IGNOROVÁNÍ DIAKRITIKY
                 removedItemsList.add(recept);
@@ -117,9 +136,11 @@ public class ReceptyArrayList<Type extends Recept> extends ArrayList<Type> {
         }
     }
 
-    public void restoreDatabse() {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public synchronized void restoreDatabse() {
         this.addAll(removedItemsList);
         removedItemsList.clear();
+       //loop this.sort((o1, o2) -> o1.getNazev().compareTo(o2.getNazev()));    //pokud by se chtělo mít seznam vždy abecedně a ne naposldy hledané nahoře
     }
 
 }

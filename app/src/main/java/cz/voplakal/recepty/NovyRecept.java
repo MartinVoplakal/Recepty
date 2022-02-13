@@ -4,6 +4,8 @@ import static cz.voplakal.recepty.MainActivity.TAG;
 import static cz.voplakal.recepty.MainActivity.navigationView;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -13,10 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 public class NovyRecept extends Fragment {
@@ -97,12 +101,18 @@ public class NovyRecept extends Fragment {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_done:
             case R.id.menu_done_text:
                 saveRecept();
+                // Check if no view has focus:
+                View view = getActivity().getCurrentFocus();
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                 getParentFragmentManager().beginTransaction().setReorderingAllowed(true).setCustomAnimations(
                         R.anim.slide_in,  // enter
                         R.anim.fade_out,  // exit
@@ -133,8 +143,8 @@ public class NovyRecept extends Fragment {
         if (!novyRecept) {
             DatabaseHandler db = ((MainActivity) getActivity()).db;
             db.deleteRecept(idReceptu);
+            ((MainActivity) getActivity()).loadAndApplyData();
         }
-        ((MainActivity) getActivity()).loadAndApplyData();
     }
 
     private void saveRecept() {
@@ -146,10 +156,16 @@ public class NovyRecept extends Fragment {
             builder.create().show();
         } else {
             DatabaseHandler db = ((MainActivity) getActivity()).db;
-            if (novyRecept)
+            if (novyRecept) {
                 db.addRecept(new Recept(nazevReceptuView.getText().toString().trim(), ingredienceView.getText().toString().trim(),
                         postupView.getText().toString().trim()));
-            else
+                if (nazevReceptuView.getText().toString().trim().equals("loopAdd")) {
+                    for (int i = 0; i < Integer.parseInt(ingredienceView.getText().toString()); i++) {
+                        db.addRecept(new Recept(nazevReceptuView.getText().toString().trim() + i, "ingr " + ingredienceView.getText().toString().trim(),
+                                postupView.getText().toString().trim()));
+                    }
+                }
+            } else
                 db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
                         postupView.getText().toString(), idReceptu));
 
@@ -172,12 +188,16 @@ public class NovyRecept extends Fragment {
             nazevReceptuView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
             ingredienceView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
             postupView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-            //postupView.setEnabled(false);
+          /*  nazevReceptuView.setEnabled(true);
+            ingredienceView.setEnabled(true);
+            postupView.setEnabled(true);*/
         } else {
             nazevReceptuView.setInputType(InputType.TYPE_NULL);
             ingredienceView.setInputType(InputType.TYPE_NULL);
             postupView.setInputType(InputType.TYPE_NULL);
-            // postupView.setEnabled(false);
+            /*nazevReceptuView.setEnabled(false);
+            ingredienceView.setEnabled(false);
+            postupView.setEnabled(false);*/
         }
     }
 
