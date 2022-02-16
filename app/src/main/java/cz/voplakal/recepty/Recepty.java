@@ -27,6 +27,7 @@ public class Recepty extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Recepty fragment onCreate");
+        Log.d(TAG, "pocet receptu: " + MainActivity.receptyMainList.size());
     }
 
     @Override
@@ -53,7 +54,7 @@ public class Recepty extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d("TChanged", "afterTextChanged: ");
-                if (System.currentTimeMillis() - lastCheck > 0) {
+                if (System.currentTimeMillis() - lastCheck > 0) {   // PAK ZMĚNIT NA CCA 10MS
                     lastCheck = System.currentTimeMillis();
 
                     if (lastThread != null) lastThread.interrupt();
@@ -61,7 +62,6 @@ public class Recepty extends Fragment {
                         String newFilter = searchView.getText().toString().toLowerCase().trim();
 
                         if (lastFilter.length() < newFilter.length() && newFilter.contains(lastFilter)) {
-                            Log.d(TAG, "filter... ");
                             MainActivity.receptyMainList.filter(newFilter);
                             //MainActivity.receptyMainList.removeIf(recept -> !(recept.getNazev().toLowerCase().contains(newFilter)
                             //        || recept.getIngredience().toLowerCase().contains(newFilter)));
@@ -71,12 +71,12 @@ public class Recepty extends Fragment {
                             MainActivity.receptyMainList.filter(newFilter);
                         }
                         if (Thread.currentThread().isInterrupted()) {
-                            Log.d("interr",Thread.currentThread().getName() + " is Interrupted.............................");
+                            Log.d("interr", Thread.currentThread().getName() + " is Interrupted.............................");
                             return;
                         } else lastFilter = newFilter;
 
 
-                        System.out.println(MainActivity.receptyMainList.toString());
+                 //       System.out.println(MainActivity.receptyMainList.toString());
 
                         //notify dataSetChanged() musí být voláno v "originálním" vlákně jinak:
                         //      android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
@@ -93,6 +93,7 @@ public class Recepty extends Fragment {
 
 
     }
+
     /*@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

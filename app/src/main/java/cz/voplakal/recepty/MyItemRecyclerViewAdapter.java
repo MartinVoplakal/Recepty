@@ -77,11 +77,13 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                                 .replace(R.id.fragment_container, NovyRecept.class, bundle).commit();
-                    //hide keyboard
+                     //hide keyboard
                         Activity activity = fragmentManager.getFragments().get(0).getActivity();
                         View view = activity.getCurrentFocus();
-                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        if (activity != null && view != null) {
+                            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
                     } else
                         //je to placeholder item > ic tu není a pod.
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)

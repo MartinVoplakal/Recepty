@@ -17,10 +17,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/Nazev_receptu"
-            android:inputType="none"
+            android:inputType="text|textCapSentences"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_wrapBehaviorInParent="horizontal_only" />
+            app:layout_wrapBehaviorInParent="horizontal_only"
+            />
 
         <TextView
             android:id="@+id/textView5"
@@ -37,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
             android:hint="@string/Ingredience"
-            android:inputType="none"
+            android:inputType="textMultiLine|textAutoComplete"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nazev_receptu" />
 
@@ -48,7 +49,7 @@
             android:layout_marginTop="52dp"
             android:gravity="start|top"
             android:hint="@string/Postup_pripravy"
-            android:inputType="none"
+            android:inputType="textAutoCorrect|textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ingredience_text" />

@@ -2,6 +2,7 @@ package cz.voplakal.recepty;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -87,14 +88,14 @@ public class ReceptyArrayList<Type extends Recept> extends ArrayList<Type> {
         return r;
     }
 
-    public void notifyDataSetChanged() {
+    public synchronized void notifyDataSetChanged() {
         if (adapter == null)
             throw new UnsupportedOperationException("Adapter is null. First set it setAdapter(...)");
         adapter.notifyDataSetChanged();
     }
 
     public synchronized void filter(String filter) {
-        System.out.println("method filter with parm: " + filter);
+        Log.d("filter", "method filter with parm: " + filter);
       /*  int maxCislo = 15000;
         System.out.println(2);
         outerfor:
@@ -121,26 +122,36 @@ public class ReceptyArrayList<Type extends Recept> extends ArrayList<Type> {
                 remove(recept);
             }
         }*/
+
+        String[] filters = filter.split(" ");
+
         Iterator<Recept> it = (Iterator<Recept>) iterator();
         while (it.hasNext()) {
             Recept recept = it.next();
-            if(Thread.currentThread().isInterrupted()) return;
-
-            if (recept.getNazev().toLowerCase().contains(filter)
-                    || recept.getIngredience().toLowerCase().contains(filter)) ;
-            else {
-                //MUSÍ SE PŘIDAT IGNOROVÁNÍ DIAKRITIKY
-                removedItemsList.add(recept);
-                it.remove();
+            if (Thread.currentThread().isInterrupted()) {
+                System.out.println("interrupted");
+                return;
+            }
+            //recept.getNazev().toLowerCase().contains(filter) || recept.getIngredience().toLowerCase().contains(filter)
+            for (String filter1 : filters) {
+                if (recept.getNazev().toLowerCase().contains(filter1)
+                        || recept.getIngredience().toLowerCase().contains(filter1)) ;
+                else {
+                    //MUSÍ SE PŘIDAT IGNOROVÁNÍ DIAKRITIKY
+                    removedItemsList.add(recept);
+                    it.remove();
+                    break;
+                }
             }
         }
+        Log.d("filter", "filter: end");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public synchronized void restoreDatabse() {
         this.addAll(removedItemsList);
         removedItemsList.clear();
-       //loop this.sort((o1, o2) -> o1.getNazev().compareTo(o2.getNazev()));    //pokud by se chtělo mít seznam vždy abecedně a ne naposldy hledané nahoře
+        //loop this.sort((o1, o2) -> o1.getNazev().compareTo(o2.getNazev()));    //pokud by se chtělo mít seznam vždy abecedně a ne naposldy hledané nahoře
     }
 
 }

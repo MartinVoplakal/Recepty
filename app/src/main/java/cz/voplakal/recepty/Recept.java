@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Recept {
+    //bundle keys
     public static final String ID = "recept_ID";
     public static final String NAZEV = "recept_NAZEV";
     public static final String INGREDIENCE = "recept_INGREDIENCE";
@@ -34,6 +35,7 @@ public class Recept {
         this.id = cursor.getInt(0);
         this.nazev = cursor.getString(1);
         this.ingredience = cursor.getString(2);
+        if (cursor.getColumnCount() == 3) return;
         this.postup = cursor.getString(3);
     }
 

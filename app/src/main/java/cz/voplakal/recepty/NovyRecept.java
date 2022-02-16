@@ -5,9 +5,10 @@ import static cz.voplakal.recepty.MainActivity.navigationView;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,7 +54,6 @@ public class NovyRecept extends Fragment {
         nazevReceptuView = getView().findViewById(R.id.nazev_receptu);
         ingredienceView = getView().findViewById(R.id.ingredience_text);
         postupView = getView().findViewById(R.id.postup_na_pripravu_text);
-        if (ingredienceView == null) System.exit(0);
         //setEditability(editability);
 
 
@@ -108,10 +108,12 @@ public class NovyRecept extends Fragment {
             case R.id.menu_done:
             case R.id.menu_done_text:
                 saveRecept();
-                // Check if no view has focus:
+                //hide keyboard
                 View view = getActivity().getCurrentFocus();
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (getActivity() != null && view != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
 
                 getParentFragmentManager().beginTransaction().setReorderingAllowed(true).setCustomAnimations(
                         R.anim.slide_in,  // enter
@@ -176,6 +178,29 @@ public class NovyRecept extends Fragment {
         }
     }
 
+    private void setViewEditability(@NonNull EditText editText, boolean editability) {
+        //editText.setEnabled(editability);
+        if (!editability) {
+            editText.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+            editText.setFocusable(false);
+            //  editText.setTextColor(getResources().getColor(android.R.color.black));
+        } else {
+            editText.setFocusableInTouchMode(true);
+
+            //  editText.setBackgroundTintList(ColorStateList.valueOf(R.color.underlineEditText));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                editText.setBackgroundTintList(getContext().getColorStateList(R.color.underlineEditText));
+            }
+            //   editText.setTextColor(getResources().getColor(android.R.color.black));
+
+        }
+        //    editText.setCursorVisible(editability);
+        //   editText.setKeyListener(editability ? TextKeyListener.getInstance() : null);
+       /* nazevReceptuView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        ingredienceView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        postupView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);*/
+    }
+
     private void setEditability(boolean editability) {
         Log.d(TAG, "setEditability:");
         topMenu.findItem(R.id.menu_done).setVisible(editability);
@@ -184,21 +209,24 @@ public class NovyRecept extends Fragment {
         topMenu.findItem(R.id.menu_edit_text).setVisible(!editability);
 
 
-        if (editability) {
-            nazevReceptuView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        setViewEditability(nazevReceptuView, editability);
+        setViewEditability(ingredienceView, editability);
+        setViewEditability(postupView, editability);
+
+        /*    nazevReceptuView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
             ingredienceView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-            postupView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            postupView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);*/
           /*  nazevReceptuView.setEnabled(true);
             ingredienceView.setEnabled(true);
             postupView.setEnabled(true);*/
-        } else {
-            nazevReceptuView.setInputType(InputType.TYPE_NULL);
+          /*  nazevReceptuView.setInputType(InputType.TYPE_NULL);
             ingredienceView.setInputType(InputType.TYPE_NULL);
-            postupView.setInputType(InputType.TYPE_NULL);
+            postupView.setInputType(InputType.TYPE_NULL);*/
             /*nazevReceptuView.setEnabled(false);
             ingredienceView.setEnabled(false);
             postupView.setEnabled(false);*/
-        }
+
+
     }
 
     //skrytií určitého prvku horní nadídky...

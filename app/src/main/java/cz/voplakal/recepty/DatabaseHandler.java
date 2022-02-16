@@ -63,9 +63,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     Recept getRecept(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_RECEPTY, new String[] {ID_KEY,
+        Cursor cursor = db.query(TABLE_RECEPTY, new String[]{ID_KEY,
                         NAZEV_KEY, INGREDIENCE_KEY, POSTUP_KEY}, ID_KEY + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
+                new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
@@ -73,10 +73,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     // code to get all contacts in a list view
-    public ArrayList<Recept> getAllRecepty() {
+    public ArrayList<Recept> getAllRecepty(boolean smaller) {
         ArrayList<Recept> list = new ArrayList<>();
         // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_RECEPTY;
+        String selectQuery;
+        if (smaller)
+            selectQuery = "SELECT " + ID_KEY + ", " + NAZEV_KEY + ", " + INGREDIENCE_KEY + " FROM " + TABLE_RECEPTY;
+        else selectQuery = "SELECT  * FROM " + TABLE_RECEPTY;
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -91,7 +94,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 list.add(new Recept(cursor));
             } while (cursor.moveToNext());
         }
-
         return list;
     }
 
@@ -104,16 +106,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // updating row
         return db.update(TABLE_RECEPTY, values, ID_KEY + " = ?",
-                new String[] { String.valueOf(recept.getId()) });
+                new String[]{String.valueOf(recept.getId())});
     }
 
     // Deleting single contact
     public void deleteRecept(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RECEPTY, ID_KEY + " = ?",
-                new String[] { String.valueOf(id) });
+                new String[]{String.valueOf(id)});
         db.close();
     }
+
     public void deleteAll() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEPTY);

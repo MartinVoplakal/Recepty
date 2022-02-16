@@ -15,6 +15,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 
+// ÚPLNĚ ZBYTEČNĚ NAČÍTÁM RECEPT ZNOVA PŘI OTEVŘENÍ, PROTOŽE V TOM LISTU UŽ STEJNĚ JE
+
+
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static String TAG = "MYTAG";
     private DrawerLayout drawer;
@@ -67,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void loadAndApplyData() {
         receptyMainList.clear();
-        receptyMainList.addAll(db.getAllRecepty());
+        receptyMainList.addAll(db.getAllRecepty(true));
         if(receptyMainList.isEmpty()) receptyMainList.add(
                 new Recept(this.getResources().getString(R.string.emptyName),
                         this.getResources().getString(R.string.emptyIngredience), null, -1)); //id out of range to deactivate onclick
