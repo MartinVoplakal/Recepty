@@ -4,11 +4,14 @@ import static cz.voplakal.recepty.MainActivity.TAG;
 import static cz.voplakal.recepty.MainActivity.navigationView;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,12 +20,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class NovyRecept extends Fragment {
     //   private boolean onOf = false;
@@ -54,6 +59,8 @@ public class NovyRecept extends Fragment {
         nazevReceptuView = getView().findViewById(R.id.nazev_receptu);
         ingredienceView = getView().findViewById(R.id.ingredience_text);
         postupView = getView().findViewById(R.id.postup_na_pripravu_text);
+        Button btn = getView().findViewById(R.id.takePictureBtn);
+        btn.setOnClickListener(v -> dispatchTakePictureIntent());
         //setEditability(editability);
 
 
@@ -107,20 +114,31 @@ public class NovyRecept extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_done:
             case R.id.menu_done_text:
-                saveRecept();
+                if (nazevReceptuView.getText().toString().trim().equals("")) {
+                    //https://www.javatpoint.com/android-alert-dialog-example
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.dialogPrazdnyRecept);
+                    builder.setPositiveButton("Ok", null);
+                    builder.create().show();
+                    break;
+                } else saveRecept();
                 //hide keyboard
                 View view = getActivity().getCurrentFocus();
                 if (getActivity() != null && view != null) {
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction().setReorderingAllowed(true)
+                        .setCustomAnimations(
+                                R.anim.slide_in,  // enter
+                                R.anim.fade_out,  // exit
+                                R.anim.fade_in,   // popEnter
+                                R.anim.slide_out  // popExit
+                        ).replace(R.id.fragment_container, Recepty.class, null);
+                if (!novyRecept) transaction.addToBackStack(null);
+                else getParentFragmentManager().popBackStackImmediate();
+                transaction.commit();
 
-                getParentFragmentManager().beginTransaction().setReorderingAllowed(true).setCustomAnimations(
-                        R.anim.slide_in,  // enter
-                        R.anim.fade_out,  // exit
-                        R.anim.fade_in,   // popEnter
-                        R.anim.slide_out  // popExit
-                ).replace(R.id.fragment_container, Recepty.class, null).commit();
                 navigationView.setCheckedItem(R.id.nav_recepty);
                 break;
             case R.id.menu_edit:
@@ -129,16 +147,26 @@ public class NovyRecept extends Fragment {
                 break;
             case R.id.menu_trash:
                 deleteRecept();
-                getParentFragmentManager().beginTransaction().setReorderingAllowed(true).setCustomAnimations(
-                        R.anim.slide_in,  // enter
-                        R.anim.fade_out,  // exit
-                        R.anim.fade_in,   // popEnter
-                        R.anim.slide_out  // popExit
-                ).replace(R.id.fragment_container, Recepty.class, null).commit();
+                getParentFragmentManager().beginTransaction().setReorderingAllowed(true)
+                        .setCustomAnimations(
+                                R.anim.slide_in,  // enter
+                                R.anim.fade_out,  // exit
+                                R.anim.fade_in,   // popEnter
+                                R.anim.slide_out  // popExit
+                        ).replace(R.id.fragment_container, Recepty.class, null).commit();
                 navigationView.setCheckedItem(R.id.nav_recepty);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //skrytií určitého prvku horní nadídky...
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        Log.d(TAG, "onPrepareOptionsMenu: novyrecept");
+        topMenu = menu;
+        super.onPrepareOptionsMenu(menu);
+        setEditability(editability);
     }
 
     private void deleteRecept() {
@@ -150,32 +178,25 @@ public class NovyRecept extends Fragment {
     }
 
     private void saveRecept() {
-        if (nazevReceptuView.getText().toString().trim().equals("")) {
-            //https://www.javatpoint.com/android-alert-dialog-example
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle(R.string.dialogPrazdnyRecept);
-            builder.setPositiveButton("Ok", null);
-            builder.create().show();
-        } else {
-            DatabaseHandler db = ((MainActivity) getActivity()).db;
-            if (novyRecept) {
-                db.addRecept(new Recept(nazevReceptuView.getText().toString().trim(), ingredienceView.getText().toString().trim(),
-                        postupView.getText().toString().trim()));
-                if (nazevReceptuView.getText().toString().trim().equals("loopAdd")) {
-                    for (int i = 0; i < Integer.parseInt(ingredienceView.getText().toString()); i++) {
-                        db.addRecept(new Recept(nazevReceptuView.getText().toString().trim() + i, "ingr " + ingredienceView.getText().toString().trim(),
-                                postupView.getText().toString().trim()));
-                    }
+        DatabaseHandler db = ((MainActivity) getActivity()).db;
+        if (novyRecept) {
+            db.addRecept(new Recept(nazevReceptuView.getText().toString().trim(), ingredienceView.getText().toString().trim(),
+                    postupView.getText().toString().trim()));
+            if (nazevReceptuView.getText().toString().trim().equals("loopAdd")) {
+                for (int i = 0; i < Integer.parseInt(ingredienceView.getText().toString()); i++) {
+                    db.addRecept(new Recept(nazevReceptuView.getText().toString().trim() + i, "ingr " + ingredienceView.getText().toString().trim(),
+                            postupView.getText().toString().trim()));
                 }
-            } else
-                db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
-                        postupView.getText().toString(), idReceptu));
+            }
+        } else
+            db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
+                    postupView.getText().toString(), idReceptu));
 
-            ((MainActivity) getActivity()).loadAndApplyData();
+        ((MainActivity) getActivity()).loadAndApplyData();
 // Insert the new row, returning the primary key value of the new row
  /*           long newRowId = db.insert(TABLE_RECEPTY, null, values);
             db.close();*/
-        }
+
     }
 
     private void setViewEditability(@NonNull EditText editText, boolean editability) {
@@ -229,12 +250,15 @@ public class NovyRecept extends Fragment {
 
     }
 
-    //skrytií určitého prvku horní nadídky...
-    @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        Log.d(TAG, "onPrepareOptionsMenu: novyrecept");
-        topMenu = menu;
-        super.onPrepareOptionsMenu(menu);
-        setEditability(editability);
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // display error state to the user     //https://developer.android.com/training/camera/photobasics
+        }
     }
+
 }

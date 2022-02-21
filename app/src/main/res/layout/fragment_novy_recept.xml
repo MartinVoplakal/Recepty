@@ -63,14 +63,42 @@
             app:layout_constraintBottom_toTopOf="@+id/postup_na_pripravu_text"
             app:layout_constraintStart_toStartOf="parent" />
 
-      <!--  <Button
-            android:id="@+id/button1"
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="44dp"
-            android:text="Button"
+            android:layout_marginBottom="12dp"
+            android:text="@string/Postup_pripravy"
+            app:layout_constraintBottom_toTopOf="@+id/takePictureBtn"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:minHeight="500dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/postup_na_pripravu_text" />-->
+            app:layout_constraintTop_toBottomOf="@+id/takePictureBtn" />
+
+        <Button
+            android:id="@+id/takePictureBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:text="@string/addFotoBtn"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postup_na_pripravu_text" />
+
+        <!--  <Button
+              android:id="@+id/button1"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="44dp"
+              android:text="Button"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/postup_na_pripravu_text" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

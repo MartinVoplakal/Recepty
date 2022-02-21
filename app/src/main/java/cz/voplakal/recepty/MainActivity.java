@@ -1,11 +1,15 @@
 package cz.voplakal.recepty;
 
 import android.app.AppComponentFactory;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -69,14 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //navigationView.setCheckedItem(getSupportFragmentManager().getFragments().get(0).getId());
     }
 
-    public void loadAndApplyData() {
-        receptyMainList.clear();
-        receptyMainList.addAll(db.getAllRecepty(true));
-        if(receptyMainList.isEmpty()) receptyMainList.add(
-                new Recept(this.getResources().getString(R.string.emptyName),
-                        this.getResources().getString(R.string.emptyIngredience), null, -1)); //id out of range to deactivate onclick
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -99,12 +95,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+    public void loadAndApplyData() {
+        receptyMainList.clear();
+        receptyMainList.addAll(db.getAllRecepty(true));
+        if(receptyMainList.isEmpty()) receptyMainList.add(
+                new Recept(this.getResources().getString(R.string.emptyName),
+                        this.getResources().getString(R.string.emptyIngredience), null, -1)); //id out of range to deactivate onclick
+    }
+
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else
             super.onBackPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+       // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ((ImageView) findViewById(R.id.imageView)).setImageBitmap(imageBitmap);
+        // https://developer.android.com/training/camera/photobasics
     }
 }
 

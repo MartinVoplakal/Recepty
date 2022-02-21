@@ -45,5 +45,7 @@
     <string name="emptyName">Zatím tu nejsou žádně recepty</string>
     <string name="emptyIngredience">Můžeš nějaké přidat...</string>
     <string name="loading">Načítání...</string>
+    <string name="addFotoLabel">Přidat fotku</string>
+    <string name="addFotoBtn">Vyfotit</string>
 
 </resources>

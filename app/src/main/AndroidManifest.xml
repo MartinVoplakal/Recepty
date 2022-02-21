@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cz.voplakal.recepty">
+    <!-- jen zařízení s fotoaparátem mohou instalovat g goolePlay -->
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" /> <!-- pokuid není nutně požadováno >> flase, ale pak se musí během programu kontrolovat
+                            hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) -->
 
     <application
         android:allowBackup="true"
