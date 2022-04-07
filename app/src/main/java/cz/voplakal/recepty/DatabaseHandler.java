@@ -10,13 +10,14 @@ import java.util.ArrayList;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     Context context;
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "Recepty.db";
     public static final String TABLE_RECEPTY = "recepty";
     public static final String ID_KEY = "id";
     public static final String NAZEV_KEY = "nazev";
     public static final String INGREDIENCE_KEY = "ingredience";
     public static final String POSTUP_KEY = "postup";
+    public static final String PICTURE_KEY = "picture";
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -31,7 +32,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + ID_KEY + " INTEGER PRIMARY KEY,"
                 + NAZEV_KEY + " TEXT,"
                 + INGREDIENCE_KEY + " TEXT,"
-                + POSTUP_KEY + " TEXT" + ")";
+                + POSTUP_KEY + " TEXT,"
+                + PICTURE_KEY + " TEXT"
+                + ")";
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
 
@@ -59,20 +62,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    // code to get the single contact
+    // code to get the single recept
     Recept getRecept(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_RECEPTY, new String[]{ID_KEY,
-                        NAZEV_KEY, INGREDIENCE_KEY, POSTUP_KEY}, ID_KEY + "=?",
+                        NAZEV_KEY, INGREDIENCE_KEY, POSTUP_KEY, PICTURE_KEY}, ID_KEY + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
-        return new Recept(cursor);
+        return new Recept(cursor, false);
     }
 
-    // code to get all contacts in a list view
+    // smaller says if to get picture and postup, zrychlí to tak načítání
     public ArrayList<Recept> getAllRecepty(boolean smaller) {
         ArrayList<Recept> list = new ArrayList<>();
         // Select All Query
@@ -91,7 +94,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                Log.d("MYTAG", cursor.getString(1));
 //                Log.d("MYTAG", cursor.getString(2));
                 // Adding contact to list
-                list.add(new Recept(cursor));
+                list.add(new Recept(cursor, true));
             } while (cursor.moveToNext());
         }
         return list;

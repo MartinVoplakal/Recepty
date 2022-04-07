@@ -3,40 +3,46 @@ package cz.voplakal.recepty;
 import static cz.voplakal.recepty.DatabaseHandler.ID_KEY;
 import static cz.voplakal.recepty.DatabaseHandler.INGREDIENCE_KEY;
 import static cz.voplakal.recepty.DatabaseHandler.NAZEV_KEY;
+import static cz.voplakal.recepty.DatabaseHandler.PICTURE_KEY;
 import static cz.voplakal.recepty.DatabaseHandler.POSTUP_KEY;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 
 public class Recept {
-    //bundle keys
+    //bundle keys tohle bych nejradši sloučil s kláči DB
     public static final String ID = "recept_ID";
     public static final String NAZEV = "recept_NAZEV";
     public static final String INGREDIENCE = "recept_INGREDIENCE";
     public static final String POSTUP = "recept_POPIS";
+    public static final String PICTURE = "recept_PICTURE";
 
     private long id; //optional
     private String nazev;
     private String ingredience;
     private String postup;
+    private String picturePath; //optional
 
-    public Recept(String nazev, String ingredience, String postup) {
+    //pro listy, tzv small verze
+    public Recept(String nazev, String ingredience, String postup, String picturePath) {
         this.nazev = nazev;
         this.ingredience = ingredience;
         this.postup = postup;
+        this.picturePath = picturePath;
     }
 
-    public Recept(String nazev, String ingredience, String postup, long id) {
-        this(nazev, ingredience, postup);
+    public Recept(String nazev, String ingredience, String postup, String picturePath, long id) {
+        this(nazev, ingredience, postup, picturePath);
         this.id = id;
     }
-
-    public Recept(Cursor cursor) {
+    //if small true fill only nazev id ingredience
+    public Recept(Cursor cursor, boolean small) {
         this.id = cursor.getInt(0);
         this.nazev = cursor.getString(1);
         this.ingredience = cursor.getString(2);
-        if (cursor.getColumnCount() == 3) return;
+        if (small) return;
         this.postup = cursor.getString(3);
+        this.picturePath = cursor.getString(4);
     }
 
     public ContentValues insertIn(ContentValues values, boolean withId) {
@@ -45,6 +51,7 @@ public class Recept {
         values.put(POSTUP_KEY, this.getPostup());
         if (withId)
             values.put(ID_KEY, this.getId());
+        values.put(PICTURE_KEY, this.picturePath);
         return values;
     }
 
@@ -74,6 +81,10 @@ public class Recept {
 
     public String getPostup() {
         return postup;
+    }
+
+    public String getPicturePath() {
+        return picturePath;
     }
 
     @Override

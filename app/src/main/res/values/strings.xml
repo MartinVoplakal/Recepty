@@ -47,5 +47,7 @@
     <string name="loading">Načítání...</string>
     <string name="addFotoLabel">Přidat fotku</string>
     <string name="addFotoBtn">Vyfotit</string>
+    <string name="dataSaved">Uloženo</string>
+    <string name="takePicture" >Přidat obrázek</string>
 
 </resources>

@@ -2,11 +2,9 @@ package cz.voplakal.recepty;
 
 import android.app.AppComponentFactory;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +18,6 @@ import com.google.android.material.navigation.NavigationView;
 
 
 // ÚPLNĚ ZBYTEČNĚ NAČÍTÁM RECEPT ZNOVA PŘI OTEVŘENÍ, PROTOŽE V TOM LISTU UŽ STEJNĚ JE
-
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -49,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            receptyMainList = new ReceptyArrayList<Recept>(this);
 
         db = new DatabaseHandler(this);
-     //   db.deleteAll();
+        //   db.deleteAll();
         loadAndApplyData();
 
         setContentView(R.layout.activity_main);
@@ -98,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void loadAndApplyData() {
         receptyMainList.clear();
         receptyMainList.addAll(db.getAllRecepty(true));
-        if(receptyMainList.isEmpty()) receptyMainList.add(
+        if (receptyMainList.isEmpty()) receptyMainList.add(
                 new Recept(this.getResources().getString(R.string.emptyName),
-                        this.getResources().getString(R.string.emptyIngredience), null, -1)); //id out of range to deactivate onclick
+                        this.getResources().getString(R.string.emptyIngredience), null, null, -1)); //id out of range to deactivate onclick
     }
 
     @Override
@@ -114,10 +111,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-       // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            ((ImageView) findViewById(R.id.imageView)).setImageBitmap(imageBitmap);
+        // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+        NovyRecept activeFragment = (NovyRecept) getSupportFragmentManager().getFragments().get(0);
+        activeFragment.loadPicture();
+        activeFragment.saveRecept();
         // https://developer.android.com/training/camera/photobasics
     }
 }

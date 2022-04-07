@@ -8,9 +8,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,12 +26,18 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.io.File;
+import java.io.IOException;
 
 public class NovyRecept extends Fragment {
     //   private boolean onOf = false;
@@ -35,12 +45,15 @@ public class NovyRecept extends Fragment {
     EditText nazevReceptuView;
     EditText ingredienceView;
     EditText postupView;
+    ImageView imageView;
+
+    String picturePath;
 
     boolean editability = true;
     boolean novyRecept;
     long idReceptu;
 
-
+    //odebrat, není potřeba
     public NovyRecept() {
     }
 
@@ -59,8 +72,9 @@ public class NovyRecept extends Fragment {
         nazevReceptuView = getView().findViewById(R.id.nazev_receptu);
         ingredienceView = getView().findViewById(R.id.ingredience_text);
         postupView = getView().findViewById(R.id.postup_na_pripravu_text);
+        imageView = getView().findViewById(R.id.imageView);
         Button btn = getView().findViewById(R.id.takePictureBtn);
-        btn.setOnClickListener(v -> dispatchTakePictureIntent());
+        btn.setOnClickListener(v -> dispatchTakePictureIntentFull());
         //setEditability(editability);
 
 
@@ -79,6 +93,8 @@ public class NovyRecept extends Fragment {
             //potom ve vlákně
             Recept receptDB = ((MainActivity) getActivity()).db.getRecept(idReceptu);
             postupView.setText(receptDB.getPostup());
+            picturePath = receptDB.getPicturePath();
+            loadPicture();
         } else {
             editability = true;
             novyRecept = true;
@@ -121,7 +137,10 @@ public class NovyRecept extends Fragment {
                     builder.setPositiveButton("Ok", null);
                     builder.create().show();
                     break;
-                } else saveRecept();
+                } else {
+                    saveRecept();
+                    ((MainActivity) getActivity()).loadAndApplyData();
+                }
                 //hide keyboard
                 View view = getActivity().getCurrentFocus();
                 if (getActivity() != null && view != null) {
@@ -177,22 +196,23 @@ public class NovyRecept extends Fragment {
         }
     }
 
-    private void saveRecept() {
+    void saveRecept() {
         DatabaseHandler db = ((MainActivity) getActivity()).db;
         if (novyRecept) {
             db.addRecept(new Recept(nazevReceptuView.getText().toString().trim(), ingredienceView.getText().toString().trim(),
-                    postupView.getText().toString().trim()));
+                    postupView.getText().toString().trim(), picturePath));
+            //develop feature loopAdd
             if (nazevReceptuView.getText().toString().trim().equals("loopAdd")) {
                 for (int i = 0; i < Integer.parseInt(ingredienceView.getText().toString()); i++) {
                     db.addRecept(new Recept(nazevReceptuView.getText().toString().trim() + i, "ingr " + ingredienceView.getText().toString().trim(),
-                            postupView.getText().toString().trim()));
+                            postupView.getText().toString().trim(), null));
                 }
-            }
+            }//...
         } else
             db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
-                    postupView.getText().toString(), idReceptu));
+                    postupView.getText().toString(), picturePath, idReceptu));
 
-        ((MainActivity) getActivity()).loadAndApplyData();
+        Toast.makeText(getContext(), R.string.dataSaved, Toast.LENGTH_SHORT).show();
 // Insert the new row, returning the primary key value of the new row
  /*           long newRowId = db.insert(TABLE_RECEPTY, null, values);
             db.close();*/
@@ -252,6 +272,8 @@ public class NovyRecept extends Fragment {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    /*více v MainActivtiy onActivityResult()
+     */
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
@@ -259,6 +281,53 @@ public class NovyRecept extends Fragment {
         } catch (ActivityNotFoundException e) {
             // display error state to the user     //https://developer.android.com/training/camera/photobasics
         }
+    }
+
+    private void dispatchTakePictureIntentFull() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (true) {// if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Toast.makeText(getContext(), "IO E", Toast.LENGTH_SHORT).show();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(getContext(),
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        } else Toast.makeText(getContext(), "else ERRORRRRRR", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String imageFileName = "JPEG_11_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        // Save a file: path for use with ACTION_VIEW intents
+        picturePath = image.getAbsolutePath();
+        return image;
+    }
+
+    void loadPicture() {
+        if (picturePath == null || picturePath == "") return;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        File image = new File(picturePath);
+        Bitmap imageBitmap = BitmapFactory.decodeFile(image.toString());
+        imageView.setImageBitmap(imageBitmap);
     }
 
 }

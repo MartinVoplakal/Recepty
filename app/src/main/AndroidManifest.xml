@@ -3,7 +3,7 @@
     package="cz.voplakal.recepty">
     <!-- jen zařízení s fotoaparátem mohou instalovat g goolePlay -->
     <uses-feature android:name="android.hardware.camera"
-        android:required="true" /> <!-- pokuid není nutně požadováno >> flase, ale pak se musí během programu kontrolovat
+        android:required="true" /> <!-- pokuid není nutně požadováno >> false, ale pak se musí během programu kontrolovat
                             hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) -->
 
     <application
@@ -23,6 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"></meta-data>
+        </provider>
     </application>
 
 </manifest>
