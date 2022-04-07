@@ -47,7 +47,11 @@ public class NovyRecept extends Fragment {
     EditText postupView;
     ImageView imageView;
 
-    String picturePath;
+    String picturePath = ""; //bylo načteno z db
+    String actualPicturePath = "";
+    String nazev = "";  //pro check isedited
+    String ingredience = "";
+    String postup = "";
 
     boolean editability = true;
     boolean novyRecept;
@@ -81,9 +85,9 @@ public class NovyRecept extends Fragment {
         if (getArguments() != null) {
             editability = false;
             novyRecept = false;
-            String nazev = getArguments().getString(Recept.NAZEV);
-            String ingredience = getArguments().getString(Recept.INGREDIENCE);
-            String postup = getArguments().getString(Recept.POSTUP);
+            nazev = getArguments().getString(Recept.NAZEV);
+            ingredience = getArguments().getString(Recept.INGREDIENCE);
+            //vypnuto kvůli ischanged()      postup = getArguments().getString(Recept.POSTUP);
             idReceptu = getArguments().getLong(Recept.ID);
 
             nazevReceptuView.setText(nazev);
@@ -94,6 +98,7 @@ public class NovyRecept extends Fragment {
             Recept receptDB = ((MainActivity) getActivity()).db.getRecept(idReceptu);
             postupView.setText(receptDB.getPostup());
             picturePath = receptDB.getPicturePath();
+            actualPicturePath = picturePath;
             loadPicture();
         } else {
             editability = true;
@@ -124,6 +129,55 @@ public class NovyRecept extends Fragment {
 
     }
 
+    public boolean onExit() {
+        if (isChanged() && editability) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(R.string.changesNotSaved);
+            builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+                saveRecept();
+                setEditability(false);
+            });
+            builder.setNegativeButton(R.string.no, (dialog, which) -> {
+                getParentFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
+                        .replace(R.id.fragment_container, Recepty.class, null).commit();
+            });
+            builder.create().show();
+            return true;
+        } else return false;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState: ");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
+        Log.d(TAG, "delete image if not saved");
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -139,7 +193,6 @@ public class NovyRecept extends Fragment {
                     break;
                 } else {
                     saveRecept();
-                    ((MainActivity) getActivity()).loadAndApplyData();
                 }
                 //hide keyboard
                 View view = getActivity().getCurrentFocus();
@@ -200,7 +253,8 @@ public class NovyRecept extends Fragment {
         DatabaseHandler db = ((MainActivity) getActivity()).db;
         if (novyRecept) {
             db.addRecept(new Recept(nazevReceptuView.getText().toString().trim(), ingredienceView.getText().toString().trim(),
-                    postupView.getText().toString().trim(), picturePath));
+                    postupView.getText().toString().trim(), actualPicturePath));
+            novyRecept = false;
             //develop feature loopAdd
             if (nazevReceptuView.getText().toString().trim().equals("loopAdd")) {
                 for (int i = 0; i < Integer.parseInt(ingredienceView.getText().toString()); i++) {
@@ -210,13 +264,13 @@ public class NovyRecept extends Fragment {
             }//...
         } else
             db.updateRecept(new Recept(nazevReceptuView.getText().toString(), ingredienceView.getText().toString(),
-                    postupView.getText().toString(), picturePath, idReceptu));
+                    postupView.getText().toString(), actualPicturePath, idReceptu));
 
         Toast.makeText(getContext(), R.string.dataSaved, Toast.LENGTH_SHORT).show();
+        ((MainActivity) getActivity()).loadAndApplyData();
 // Insert the new row, returning the primary key value of the new row
  /*           long newRowId = db.insert(TABLE_RECEPTY, null, values);
             db.close();*/
-
     }
 
     private void setViewEditability(@NonNull EditText editText, boolean editability) {
@@ -233,7 +287,6 @@ public class NovyRecept extends Fragment {
                 editText.setBackgroundTintList(getContext().getColorStateList(R.color.underlineEditText));
             }
             //   editText.setTextColor(getResources().getColor(android.R.color.black));
-
         }
         //    editText.setCursorVisible(editability);
         //   editText.setKeyListener(editability ? TextKeyListener.getInstance() : null);
@@ -244,16 +297,15 @@ public class NovyRecept extends Fragment {
 
     private void setEditability(boolean editability) {
         Log.d(TAG, "setEditability:");
+        this.editability = editability;
         topMenu.findItem(R.id.menu_done).setVisible(editability);
         topMenu.findItem(R.id.menu_done_text).setVisible(editability);
         topMenu.findItem(R.id.menu_edit).setVisible(!editability);
         topMenu.findItem(R.id.menu_edit_text).setVisible(!editability);
 
-
         setViewEditability(nazevReceptuView, editability);
         setViewEditability(ingredienceView, editability);
         setViewEditability(postupView, editability);
-
         /*    nazevReceptuView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
             ingredienceView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
             postupView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);*/
@@ -266,8 +318,6 @@ public class NovyRecept extends Fragment {
             /*nazevReceptuView.setEnabled(false);
             ingredienceView.setEnabled(false);
             postupView.setEnabled(false);*/
-
-
     }
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -293,7 +343,7 @@ public class NovyRecept extends Fragment {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                Toast.makeText(getContext(), "IO E", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error when tying to create a file", Toast.LENGTH_SHORT).show();
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -317,17 +367,30 @@ public class NovyRecept extends Fragment {
                 storageDir      /* directory */
         );
         // Save a file: path for use with ACTION_VIEW intents
-        picturePath = image.getAbsolutePath();
+        actualPicturePath = image.getAbsolutePath();
+        Log.d(TAG, "createImageFile: path of the new picture: " + actualPicturePath);
         return image;
     }
 
     void loadPicture() {
-        if (picturePath == null || picturePath == "") return;
+        if (actualPicturePath == "") return;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        File image = new File(picturePath);
-        Bitmap imageBitmap = BitmapFactory.decodeFile(image.toString());
-        imageView.setImageBitmap(imageBitmap);
+        try {
+            File image = new File(actualPicturePath);
+
+            Bitmap imageBitmap = BitmapFactory.decodeFile(image.toString());
+            imageView.setImageBitmap(imageBitmap);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "ERR při načítání obr", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    boolean isChanged() {
+        return !nazevReceptuView.getText().toString().trim().equals(nazev.trim())
+                || !ingredienceView.getText().toString().trim().equals(ingredience)
+                || !postupView.getText().toString().trim().equals(postup)
+                || !picturePath.equals(actualPicturePath);
     }
 
 }

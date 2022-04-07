@@ -6,11 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     Context context;
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 8;
     public static final String DATABASE_NAME = "Recepty.db";
     public static final String TABLE_RECEPTY = "recepty";
     public static final String ID_KEY = "id";
@@ -43,11 +44,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEPTY);
-
         // Create tables again
         onCreate(db);
+        //delete pictures
+        File fileOrDirectory = new File("/storage/emulated/0/Android/data/cz.voplakal.recepty/files/Pictures");
+        deleteRecursive(fileOrDirectory);
     }
-
+    //delete pictures
+    public void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        }
+        fileOrDirectory.delete();
+    }
 
     // code to add the new contact
     void addRecept(Recept recept) {

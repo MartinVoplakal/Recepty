@@ -49,5 +49,8 @@
     <string name="addFotoBtn">Vyfotit</string>
     <string name="dataSaved">Uloženo</string>
     <string name="takePicture" >Přidat obrázek</string>
+    <string name="changesNotSaved">Uložit provedené změny?</string>
+    <string name="yes">Ano</string>
+    <string name="no">Ne</string>
 
 </resources>

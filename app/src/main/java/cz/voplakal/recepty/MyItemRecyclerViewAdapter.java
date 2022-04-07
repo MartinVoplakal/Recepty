@@ -74,7 +74,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         bundle.putLong(Recept.ID, id);
                         bundle.putString(Recept.NAZEV, nazevView.getText().toString());
                         bundle.putString(Recept.INGREDIENCE, ingredienceView.getText().toString());
-                        bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
+              //vypnuto kvůli isChanged()          bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                                 .replace(R.id.fragment_container, NovyRecept.class, bundle).commit();
                      //hide keyboard

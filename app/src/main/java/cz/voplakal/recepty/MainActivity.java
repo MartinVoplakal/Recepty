@@ -16,6 +16,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.List;
+
 
 // ÚPLNĚ ZBYTEČNĚ NAČÍTÁM RECEPT ZNOVA PŘI OTEVŘENÍ, PROTOŽE V TOM LISTU UŽ STEJNĚ JE
 
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if(notifyFragmentExit()) return false;
         switch (item.getItemId()) {
             case R.id.nav_recepty:
             case R.id.nav_search:
@@ -87,9 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                        .replace(R.id.fragment_container, Test.class, null).commit();
 //                break;
         }
-        navigationView.setCheckedItem(item.getItemId());
+        //navigationView.setCheckedItem(item.getItemId());      //tady drobná změna zakomentovaní a zamena true/false return
         drawer.closeDrawer(GravityCompat.START);
-        return false;
+        return true; //return true to select the clicked item
     }
 
     public void loadAndApplyData() {
@@ -104,8 +107,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else
-            super.onBackPressed();
+        } else {
+            if (!notifyFragmentExit()) {
+                super.onBackPressed();
+            }
+        }
+    }
+
+    //return true if children handled the event
+    public boolean notifyFragmentExit() {
+        List fragmentList = getSupportFragmentManager().getFragments();
+        boolean handled = false;
+        //zajímavé žešení dalších vrstev fragment manageru
+        //for(Object f : fragmentList) {
+        //nebo jen nejsvrchnější fragment
+        Object f = fragmentList.get(0);
+        if (f instanceof NovyRecept) {
+            handled = ((NovyRecept) f).onExit();
+            /*if (handled) {
+                break;
+            }*/
+        }
+        // }
+        return handled;
     }
 
     @Override
@@ -114,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
         NovyRecept activeFragment = (NovyRecept) getSupportFragmentManager().getFragments().get(0);
         activeFragment.loadPicture();
-        activeFragment.saveRecept();
+        if (!activeFragment.novyRecept) activeFragment.saveRecept();
         // https://developer.android.com/training/camera/photobasics
     }
 }
