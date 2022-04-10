@@ -46,11 +46,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEPTY);
         // Create tables again
         onCreate(db);
-        //delete pictures
+        //delete pictures, potom celé odebrat
         File fileOrDirectory = new File("/storage/emulated/0/Android/data/cz.voplakal.recepty/files/Pictures");
         deleteRecursive(fileOrDirectory);
     }
-    //delete pictures
+    //delete pictures tohle taky odebrat
     public void deleteRecursive(File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()) {
             for (File child : fileOrDirectory.listFiles()) {
@@ -63,10 +63,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // code to add the new contact
     void addRecept(Recept recept) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         recept.insertIn(values, false);
-
         // Inserting Row
         db.insert(TABLE_RECEPTY, null, values);
         //2nd argument is String containing nullColumnHack
@@ -117,7 +115,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         recept.insertIn(values, true);
-
         // updating row
         return db.update(TABLE_RECEPTY, values, ID_KEY + " = ?",
                 new String[]{String.valueOf(recept.getId())});

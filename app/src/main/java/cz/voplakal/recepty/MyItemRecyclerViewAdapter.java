@@ -69,11 +69,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (id >= 0) {
+                    if (id >= 0) {  //id < 0 is when object is placeholder in empty list
                         Bundle bundle = new Bundle();
                         bundle.putLong(Recept.ID, id);
-                        bundle.putString(Recept.NAZEV, nazevView.getText().toString());
-                        bundle.putString(Recept.INGREDIENCE, ingredienceView.getText().toString());
+                        //bundle.putString(Recept.NAZEV, nazevView.getText().toString());
+                        //bundle.putString(Recept.INGREDIENCE, ingredienceView.getText().toString());
               //vypnuto kvůli isChanged()          bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                                 .replace(R.id.fragment_container, NovyRecept.class, bundle).commit();

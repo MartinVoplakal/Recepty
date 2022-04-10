@@ -8,6 +8,7 @@ import static cz.voplakal.recepty.DatabaseHandler.POSTUP_KEY;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 public class Recept {
     //bundle keys tohle bych nejradši sloučil s kláči DB
@@ -21,20 +22,21 @@ public class Recept {
     private String nazev;
     private String ingredience;
     private String postup;
-    private String picturePath; //optional
+    private String[] picturePaths; //optional
 
     //pro listy, tzv small verze
-    public Recept(String nazev, String ingredience, String postup, String picturePath) {
+    public Recept(String nazev, String ingredience, String postup, String[] picturePath) {
         this.nazev = nazev;
         this.ingredience = ingredience;
         this.postup = postup;
-        this.picturePath = picturePath;
+        this.picturePaths = picturePath;
     }
 
-    public Recept(String nazev, String ingredience, String postup, String picturePath, long id) {
+    public Recept(String nazev, String ingredience, String postup, String[] picturePath, long id) {
         this(nazev, ingredience, postup, picturePath);
         this.id = id;
     }
+
     //if small true fill only nazev id ingredience
     public Recept(Cursor cursor, boolean small) {
         this.id = cursor.getInt(0);
@@ -42,19 +44,28 @@ public class Recept {
         this.ingredience = cursor.getString(2);
         if (small) return;
         this.postup = cursor.getString(3);
-        this.picturePath = cursor.getString(4);
+        this.picturePaths = derialize(cursor.getString(4));
     }
 
     public ContentValues insertIn(ContentValues values, boolean withId) {
-        values.put(NAZEV_KEY, this.getNazev());
-        values.put(INGREDIENCE_KEY, this.getIngredience());
-        values.put(POSTUP_KEY, this.getPostup());
+        values.put(NAZEV_KEY, getNazev());
+        values.put(INGREDIENCE_KEY, getIngredience());
+        values.put(POSTUP_KEY, getPostup());
         if (withId)
-            values.put(ID_KEY, this.getId());
-        values.put(PICTURE_KEY, this.picturePath);
+            values.put(ID_KEY, getId());
+        values.put(PICTURE_KEY, serialize(picturePaths));
         return values;
     }
 
+    //převod array s picture path do a ze stringu který se dá uložit do DB
+    //do db je potřeba zapsat jednoduchý string, jako nejjednodušší je jako seprarátor použití čárky, ta se ale můžě teoreticky objevit v path
+    String ARRAY_DIVIDER = "#gyarab684as";
+    private String serialize(String content[]){
+        return TextUtils.join(ARRAY_DIVIDER, content);
+    }
+    private String[] derialize(String content){
+        return content.split(ARRAY_DIVIDER);
+    }
     public long getId() {
         return id;
     }
@@ -83,8 +94,8 @@ public class Recept {
         return postup;
     }
 
-    public String getPicturePath() {
-        return picturePath;
+    public String[] getPicturePaths() {
+        return picturePaths == null || picturePaths.length == 0 ? new String[0] : picturePaths;
     }
 
     @Override

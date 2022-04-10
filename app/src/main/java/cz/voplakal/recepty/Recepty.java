@@ -1,5 +1,7 @@
 package cz.voplakal.recepty;
 
+import static cz.voplakal.recepty.MainActivity.navigationView;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -33,6 +35,8 @@ public class Recepty extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        navigationView.setCheckedItem(R.id.nav_recepty);
+        navigationView.getCheckedItem().setChecked(true);
         Log.d(TAG, "Recepty fragment onViewCreated");
         searchView = (EditText) getView().findViewById(R.id.inputTextSearch);
         // searchView.setImeActionLabel("Custom text", KeyEvent.KEYCODE_NAVIGATE_NEXT);

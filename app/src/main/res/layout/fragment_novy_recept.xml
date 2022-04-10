@@ -8,6 +8,7 @@
     tools:ignore="SpeakableTextPresentCheck">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -45,7 +46,7 @@
 
         <EditText
             android:id="@+id/postup_na_pripravu_text"
-            android:layout_width="301dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="start|top"
             android:hint="@string/Postup_pripravy"
@@ -64,13 +65,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/addFotoBtn" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="36dp"
-            android:minHeight="500dp" />
 
         <!--  <Button
               android:id="@+id/button1"

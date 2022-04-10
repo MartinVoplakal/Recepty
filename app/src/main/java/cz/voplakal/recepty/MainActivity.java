@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if(notifyFragmentExit()) return false;
+        if (notifyFragmentExit()) return false;
         switch (item.getItemId()) {
             case R.id.nav_recepty:
             case R.id.nav_search:
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                        .replace(R.id.fragment_container, Test.class, null).commit();
 //                break;
         }
-        //navigationView.setCheckedItem(item.getItemId());      //tady drobná změna zakomentovaní a zamena true/false return
+        //  navigationView.setCheckedItem(item.getItemId());      //tady drobná změna zakomentovaní a zamena true/false return
         drawer.closeDrawer(GravityCompat.START);
         return true; //return true to select the clicked item
     }
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onActivityResult(requestCode, resultCode, data);
         // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
         NovyRecept activeFragment = (NovyRecept) getSupportFragmentManager().getFragments().get(0);
-        activeFragment.loadPicture();
+        activeFragment.loadPicture(activeFragment.actualPicturePaths.get(activeFragment.actualPicturePaths.size() - 1));
         if (!activeFragment.novyRecept) activeFragment.saveRecept();
         // https://developer.android.com/training/camera/photobasics
     }
