@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -88,6 +89,17 @@ public class NovyRecept extends Fragment {
         EditText editText = (EditText) view1;
         ingredienceViews.add(editText);
         if (text != null) editText.setText(text);
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                //You can identify which key pressed buy checking keyCode value with KeyEvent.KEYCODE_
+                if (keyCode == KeyEvent.KEYCODE_DEL && editText.getText().toString().equals("") && l.getChildCount() > 1) {
+                    l.removeView(editText);
+                    ingredienceViews.remove(editText);
+                }
+                return false;
+            }
+        });
         return editText;
     }
 
@@ -273,7 +285,7 @@ public class NovyRecept extends Fragment {
                     builder.create().show();
                 } else {
                     APIClient client = new APIClient(getActivity());
-                    client.share(new Recept("Vepři knedlo zelo", new String[]{"vepřové maso 0,5kg", "další ingred"}, "Prostě to udělej", null));
+                    client.share(new Recept(nazev, ingredience.toArray(new String[0]), postup, actualPicturePaths.toArray(new String[0])));
                 }
                 break;
         }
@@ -402,7 +414,7 @@ public class NovyRecept extends Fragment {
         }
     }
 
-    private void dispatchTakePictureIntentFull() {
+    private void dispatchTakePictureIntentFull() {              // https://developer.android.com/training/camera/photobasics
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (true) {// if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {

@@ -38,7 +38,7 @@ public class Recepty extends Fragment {
         navigationView.setCheckedItem(R.id.nav_recepty);
         navigationView.getCheckedItem().setChecked(true);
         Log.d(TAG, "Recepty fragment onViewCreated");
-        searchView = (EditText) getView().findViewById(R.id.inputTextSearch);
+        searchView = getView().findViewById(R.id.inputTextSearch);
         // searchView.setImeActionLabel("Custom text", KeyEvent.KEYCODE_NAVIGATE_NEXT);
         searchView.addTextChangedListener(new TextWatcher() {
             long lastCheck = System.currentTimeMillis();
@@ -80,7 +80,7 @@ public class Recepty extends Fragment {
                         } else lastFilter = newFilter;
 
 
-                 //       System.out.println(MainActivity.receptyMainList.toString());
+                        //       System.out.println(MainActivity.receptyMainList.toString());
 
                         //notify dataSetChanged() musí být voláno v "originálním" vlákně jinak:
                         //      android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
