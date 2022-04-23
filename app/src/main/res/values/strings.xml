@@ -36,7 +36,7 @@
         "flexibility of the material creates new affordances that supercede those in the physicalwerteeeeeeeeeeeeeeeeeeeeee "
     </string>
     <string name="Nazev_receptu">Název receptu</string>
-    <string name="Ingredience">ingredience odělené čárkou</string>
+    <string name="Ingredience">např. Mouka 350g</string>
     <string name="ingredienceLabel">Ingredience</string>
     <string name="Postup_pripravy">Postup na přípravu</string>
     <string name="done">hotovo</string>
@@ -53,5 +53,7 @@
     <string name="no">Ne</string>
     <string name="deletePicture">Opravdu chcete smazat tento obrázek?</string>
     <string name="deleteRecept">Opravdu smazat recept?</string>
+    <string name="share">sdílet</string>
+    <string name="saveFirst">Nejprve prosím změny uložte.</string>
 
 </resources>

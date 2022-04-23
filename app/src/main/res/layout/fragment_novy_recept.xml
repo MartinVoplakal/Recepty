@@ -29,12 +29,18 @@
             android:layout_marginBottom="8dp"
             android:text="@string/ingredienceLabel" />
 
-        <EditText
-            android:id="@+id/ingredience_text"
+
+        <LinearLayout
+            android:id="@+id/ingrLyout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
+
+        <ImageButton
+            android:id="@+id/addIngr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/Ingredience"
-            android:inputType="textMultiLine|textAutoComplete" />
+            android:src="@drawable/ic_novyrecept" />
 
         <TextView
             android:id="@+id/textView"

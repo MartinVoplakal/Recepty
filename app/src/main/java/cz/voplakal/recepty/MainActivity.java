@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         receptyMainList.clear();
         receptyMainList.addAll(db.getAllRecepty(true));
         if (receptyMainList.isEmpty()) receptyMainList.add(
-                new Recept(this.getResources().getString(R.string.emptyName),
-                        this.getResources().getString(R.string.emptyIngredience), null, null, -1)); //id out of range to deactivate onclick
+                new Recept(this.getResources().getString(R.string.emptyName), new String[] {
+                        this.getResources().getString(R.string.emptyIngredience)}, null, null, -1)); //id out of range to deactivate onclick
     }
 
     @Override

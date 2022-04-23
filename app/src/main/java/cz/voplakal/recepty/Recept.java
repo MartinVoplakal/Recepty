@@ -10,6 +10,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import java.util.Arrays;
+
 public class Recept {
     //bundle keys tohle bych nejradši sloučil s kláči DB
     public static final String ID = "recept_ID";
@@ -20,19 +22,19 @@ public class Recept {
 
     private long id; //optional
     private String nazev;
-    private String ingredience;
+    private String[] ingredience;
     private String postup;
     private String[] picturePaths; //optional
 
     //pro listy, tzv small verze
-    public Recept(String nazev, String ingredience, String postup, String[] picturePath) {
+    public Recept(String nazev, String[] ingredience, String postup, String[] picturePath) {
         this.nazev = nazev;
         this.ingredience = ingredience;
         this.postup = postup;
         this.picturePaths = picturePath;
     }
 
-    public Recept(String nazev, String ingredience, String postup, String[] picturePath, long id) {
+    public Recept(String nazev, String[] ingredience, String postup, String[] picturePath, long id) {
         this(nazev, ingredience, postup, picturePath);
         this.id = id;
     }
@@ -41,7 +43,7 @@ public class Recept {
     public Recept(Cursor cursor, boolean small) {
         this.id = cursor.getInt(0);
         this.nazev = cursor.getString(1);
-        this.ingredience = cursor.getString(2);
+        this.ingredience = derialize(cursor.getString(2));
         if (small) return;
         this.postup = cursor.getString(3);
         this.picturePaths = derialize(cursor.getString(4));
@@ -49,7 +51,7 @@ public class Recept {
 
     public ContentValues insertIn(ContentValues values, boolean withId) {
         values.put(NAZEV_KEY, getNazev());
-        values.put(INGREDIENCE_KEY, getIngredience());
+        values.put(INGREDIENCE_KEY, serialize(getIngredienceArr()));
         values.put(POSTUP_KEY, getPostup());
         if (withId)
             values.put(ID_KEY, getId());
@@ -60,12 +62,15 @@ public class Recept {
     //převod array s picture path do a ze stringu který se dá uložit do DB
     //do db je potřeba zapsat jednoduchý string, jako nejjednodušší je jako seprarátor použití čárky, ta se ale můžě teoreticky objevit v path
     String ARRAY_DIVIDER = "#gyarab684as";
-    private String serialize(String content[]){
+
+    private String serialize(String content[]) {
         return TextUtils.join(ARRAY_DIVIDER, content);
     }
-    private String[] derialize(String content){
+
+    private String[] derialize(String content) {
         return content.split(ARRAY_DIVIDER);
     }
+
     public long getId() {
         return id;
     }
@@ -74,7 +79,7 @@ public class Recept {
         this.nazev = nazev;
     }
 
-    public void setIngredience(String ingredience) {
+    public void setIngredience(String[] ingredience) {
         this.ingredience = ingredience;
     }
 
@@ -87,8 +92,14 @@ public class Recept {
     }
 
     public String getIngredience() {
+        String s = Arrays.toString(ingredience);
+        return s.substring(1, s.length() - 1);
+    }
+
+    public String[] getIngredienceArr() {
         return ingredience;
     }
+
 
     public String getPostup() {
         return postup;
