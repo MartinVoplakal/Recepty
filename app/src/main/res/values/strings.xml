@@ -39,6 +39,7 @@
     <string name="Ingredience">např. Mouka 350g</string>
     <string name="ingredienceLabel">Ingredience</string>
     <string name="Postup_pripravy">Postup na přípravu</string>
+    <string name="Postup_hint">Jak jídlo připravit? Jak dlouho to zabere?</string>
     <string name="done">hotovo</string>
     <string name="upravit">upravit</string>
     <string name="dialogPrazdnyRecept">Nemůžeš uložit recept bez názvu!</string>
@@ -47,7 +48,7 @@
     <string name="addFotoLabel">Přidat fotku</string>
     <string name="addFotoBtn">Přidat</string>
     <string name="dataSaved">Uloženo</string>
-    <string name="takePicture" >Obrázky</string>
+    <string name="takePicture">Obrázky</string>
     <string name="changesNotSaved">Uložit provedené změny?</string>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
@@ -55,5 +56,19 @@
     <string name="deleteRecept">Opravdu smazat recept?</string>
     <string name="share">sdílet</string>
     <string name="saveFirst">Nejprve prosím změny uložte.</string>
+    <!-- Preference Titles -->
+    <string name="backup">Zálohování</string>
+
+    <!-- Messages Preferences -->
+    <string name="backup_email">Email pro zálohování</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_now">Synchronizovat</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="backup_description" >Aby bylo možné v budoucnu vaše data obnovit na jakémkoli jiném zařízení je potřeba provést jejich zálohu. Zkopírujte klíč níže a uložte si ho na bezpečné místo.</string>
 
 </resources>

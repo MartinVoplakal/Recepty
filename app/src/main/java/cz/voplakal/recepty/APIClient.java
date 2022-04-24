@@ -10,7 +10,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -19,38 +22,56 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class APIClient {
     Activity activity;
     // String DOMAIN = "https://receptyserver.voplakm.repl.co";
-    String DOMAIN = "https://151b-88-103-224-25.ngrok.io";
+    String DOMAIN = "https://051b-88-103-224-25.ngrok.io";
 
     public APIClient(Activity activity) {
         this.activity = activity;
     }
 
-    public String get(String id) throws IOException {    //pak předělat na return Recept
+    /**
+     * @param req
+     * @return String JSON nebo null pokud err
+     */
+    public String get(String req) {    //musí být v thredu
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(DOMAIN + req);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
+            urlConnection.disconnect();
+            return in.next();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            if (urlConnection != null)
+                urlConnection.disconnect();
+        }
+    }
 
-        //   Thread thread = new Thread(() -> {
-        URL url = new URL(DOMAIN + "/shared?id=" + id + "&json=true");
+    public String getClientID() throws IOException {    //musí být v thredu
+        URL url = new URL(DOMAIN + "/backupCode");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
+        String res = in.next();
         urlConnection.disconnect();
-        return in.next();
-        //  });
-        //  thread.start();
+        return res;
     }
 
     /**
      * @param recept
      * @return id of the shared recept on server or null if Exeption
      */
-    private String post(Recept recept) {
+    private String post(Recept recept, String params, @NonNull String clientKey) {  //clentKey může být null, používá se jen při backupu
         HttpURLConnection urlConnection = null;
         String res = null;
         try {
-            URL url = new URL(DOMAIN + "/share");
+            URL url = new URL(DOMAIN + params);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setChunkedStreamingMode(0);
             urlConnection.setRequestMethod("POST");
@@ -73,6 +94,13 @@ public class APIClient {
                     }
                 jsonParam.put("images", pictures);
             }
+            if (params.equals("/backup")) {
+                jsonParam.put("id", recept.getId());
+                if (clientKey == null || clientKey.isEmpty())
+                    throw new IllegalArgumentException("client key is empty");
+                else
+                    jsonParam.put("clientid", clientKey);
+            }
             Log.i("MYTAG", jsonParam.toString());
 
             OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
@@ -80,11 +108,10 @@ public class APIClient {
             writer.flush();
             writer.close();
             Log.d(TAG, "post: close");
+            urlConnection.connect();
 
-            Log.d(TAG, "post: err stream");
             Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
             Log.d(TAG, "post: connect");
-            urlConnection.connect();
             Log.d(TAG, String.valueOf(urlConnection.getResponseCode()));
             Log.d(TAG, String.valueOf(urlConnection.getResponseMessage()));
             if (in.hasNext())
@@ -93,8 +120,31 @@ public class APIClient {
         } catch (Exception e) {
             Log.d(TAG, String.valueOf(e));
             Scanner inerr = new Scanner(urlConnection.getErrorStream()).useDelimiter("\\A");
-            if (inerr.hasNext())
-                activity.runOnUiThread(() -> Toast.makeText(activity, inerr.next(), Toast.LENGTH_LONG).show());
+            String toast = "";
+            if (inerr.hasNext()) {
+                String errStream = inerr.next();
+                Log.d(TAG, "post: 1");
+                Log.d(TAG, errStream.length() + "");
+                Log.d(TAG, errStream);
+                if (errStream.length() < 60) {
+                    toast = errStream;
+                } else {
+                    try {
+                        toast = urlConnection.getResponseMessage();
+                    } catch (IOException ioException) {
+                        toast = e.getMessage();
+                    }
+                }
+            } else {
+                try {
+                    Log.d(TAG, "post: 2");
+                    toast = urlConnection.getResponseMessage();
+                } catch (IOException ioException) {
+                    toast = e.getMessage();
+                }
+            }
+            final String finalToast = toast;
+            activity.runOnUiThread(() -> Toast.makeText(activity, finalToast, Toast.LENGTH_LONG).show());
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -105,7 +155,7 @@ public class APIClient {
 
     public void share(Recept recept) {
         Thread thread = new Thread(() -> {
-            String res = post(recept);
+            String res = post(recept, "/share", null);
             if (res == null) return;
 
             Intent sendIntent = new Intent();
@@ -119,6 +169,40 @@ public class APIClient {
         thread.start();
     }
 
+    public void backup(ArrayList<Recept> recepty, String clientKey) {
+        Thread thread = new Thread(() -> {
+            int countOK = 0;
+            int countErr = 0;
+            for (Recept recept : recepty) {
+                if (post(recept, "/backup", clientKey) != null)
+                    countOK++;
+                else countErr++;
+            }
+            int finalCountErr = countErr;
+            int finalCountOK = countOK;
+            activity.runOnUiThread(() -> Toast.makeText(activity, "Zálohování dokončeno " +
+                            (finalCountErr > 0 ? +finalCountErr + " receptů se nepovedlo nahrát" : finalCountOK + " úspěšně nahraných receptů")
+                    , Toast.LENGTH_SHORT).show());
+        });
+        thread.start();
+    }
+
+    public void restoreBackup() {
+        Thread thread = new Thread(() -> {
+            get("/backupStart");
+            String jsonStr = get("/backupAll");
+            try {
+                JSONObject jsonObject = new JSONObject(jsonStr);
+                JSONArray jsonArr = jsonObject.getJSONArray("");
+                //tady jsem zkončil
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+
+    }
+
     private String getStringImage(String path) {
         Log.d(TAG, "getStringImage: " + path);//zdroj: https://stackoverflow.com/questions/43574357/how-to-send-image-as-post-in-android-studio
         File file = new File(path);
@@ -130,5 +214,6 @@ public class APIClient {
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
     }
+
 }
 

@@ -1,10 +1,13 @@
 package cz.voplakal.recepty;
 
+import android.app.AlertDialog;
 import android.app.AppComponentFactory;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,9 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -77,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (notifyFragmentExit()) return false;
         switch (item.getItemId()) {
             case R.id.nav_recepty:
-            case R.id.nav_search:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                         .replace(R.id.fragment_container, Recepty.class, null).commit();
                 break;
@@ -85,10 +89,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                         .replace(R.id.fragment_container, NovyRecept.class, null).commit();
                 break;
-//            case R.id.nav_test:
-//                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
-//                        .replace(R.id.fragment_container, Test.class, null).commit();
-//                break;
+            case R.id.nav_settings:
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
+                        .replace(R.id.fragment_container, SettingsFragment.class, null).commit();
         }
         //  navigationView.setCheckedItem(item.getItemId());      //tady drobná změna zakomentovaní a zamena true/false return
         drawer.closeDrawer(GravityCompat.START);
@@ -99,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         receptyMainList.clear();
         receptyMainList.addAll(db.getAllRecepty(true));
         if (receptyMainList.isEmpty()) receptyMainList.add(
-                new Recept(this.getResources().getString(R.string.emptyName), new String[] {
+                new Recept(this.getResources().getString(R.string.emptyName), new String[]{
                         this.getResources().getString(R.string.emptyIngredience)}, null, null, -1)); //id out of range to deactivate onclick
     }
 
@@ -140,6 +143,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         activeFragment.loadPicture(activeFragment.actualPicturePaths.get(activeFragment.actualPicturePaths.size() - 1));
         if (!activeFragment.novyRecept) activeFragment.saveRecept();
         // https://developer.android.com/training/camera/photobasics
+    }
+
+    public void syncNow(View v) {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String clientkey = sharedPreferences.getString("clientkeyvalue", "");
+        Log.d(TAG, "syncNow: " + clientkey);
+        if (clientkey.equals("")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Nejprve si uložte identifikační klíč");
+            builder.setPositiveButton("Ok", null);
+            builder.create().show();
+        }
+        //sync
+        APIClient api = new APIClient(this);
+        //geta all receptay
+        //foreach > uplado
+        ArrayList<Recept> dbRecepty = db.getAllRecepty(false);
+        api.backup(dbRecepty, clientkey);
+    }
+    public void restoreBackup(View v) {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String clientkey = sharedPreferences.getString("clientkeyvalue", "");
+
+        if (clientkey.equals("")) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Nejprve si uložte identifikační klíč");
+            builder.setPositiveButton("Ok", null);
+            builder.create().show();
+        }
+        //restbackup
+        APIClient api = new APIClient(this);
+        api.restoreBackup();//ret list recept
     }
 }
 
