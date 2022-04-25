@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">εϵe-Kuchařka</string>
+    <string name="app_name">E-kuchařka</string>
     <string name="navigation_drawer_open">Open nav drawer</string>
     <string name="navigation_drawer_close">Close nav drawer</string><!-- tohle tady musí být pro objekt ActionBarDrawerToggle a slouží pro neslyšící-->
     <!-- TODO: Remove or change this placeholder text -->
