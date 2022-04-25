@@ -148,6 +148,7 @@ public class NovyRecept extends Fragment {
             novyRecept = true;
             picturePaths = new ArrayList<>();
             actualPicturePaths = new ArrayList<>();
+            ingredience = new ArrayList<>();
             addIngrToGroup(null);
         }
     }
@@ -456,9 +457,10 @@ public class NovyRecept extends Fragment {
             File file = new File(path);
             Bitmap imageBitmap = BitmapFactory.decodeFile(file.toString());
 
-            ImageView imageView = new ImageView(getContext());
+        //    ImageView imageView = new ImageView(getContext());
             //ImageView imageView = new ImageView(getContext(), null, R.style.MyImageViewStyle);    nefunguje
-            imageView.setPadding(0, 20, 0, 0);
+            ImageView imageView = (ImageView) LayoutInflater.from(getContext()).inflate(R.layout.image_layout, null);
+        //    imageView.setPadding(0, 20, 0, 0);
             imageView.setImageBitmap(imageBitmap);
             imageView.setOnClickListener(v -> {
                 if (editability) {
@@ -493,6 +495,9 @@ public class NovyRecept extends Fragment {
             s = i.getText().toString().trim();
             if (!s.isEmpty()) ingrs.add(s);
         }
+        Log.d(TAG, "isChanged: " + (!ingrs.equals(ingredience)));
+        Log.d(TAG, "isChanged: " + ingrs.size());
+        Log.d(TAG, "isChanged: " + ingredience.size());
 
         return !nazevReceptuView.getText().toString().trim().equals(nazev.trim())
                 || !ingrs.equals(ingredience)

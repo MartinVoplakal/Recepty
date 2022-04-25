@@ -33,8 +33,13 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         //     holder.mItem = mValues.get(position);
+        //Pokud je text příliš dlouhý
+
+        String ingr = mValues.get(position).getIngredience();
+        if (ingr.length() > 60)
+            ingr = ingr.substring(0, 60) + "...";
         holder.nazevView.setText(mValues.get(position).getNazev());
-        holder.ingredienceView.setText(mValues.get(position).getIngredience());
+        holder.ingredienceView.setText(ingr);
         holder.id = mValues.get(position).getId();
     }
 

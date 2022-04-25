@@ -38,19 +38,44 @@ public class APIClient {
      * @param req
      * @return String JSON nebo null pokud err
      */
-    public String get(String req, String strJSON) {    //musí být v thredu
+    public String get(String req) {    //musí být v thredu
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(DOMAIN + req);
             urlConnection = (HttpURLConnection) url.openConnection();
             Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
+            urlConnection.connect();
+            return in.next();
+        } catch (Exception e) {
+            Log.d(TAG, "get: " + e);
+            return null;
+        } finally {
+            if (urlConnection != null)
+                urlConnection.disconnect();
+        }
+    }
+
+    public String post(String req, String strJSON) {    //musí být v thredu
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(DOMAIN + req);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setChunkedStreamingMode(0);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setDoOutput(true);
+            urlConnection.setDoInput(true);
+
             if (strJSON != null) {
                 OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
+                Log.d(TAG, "post: " + strJSON);
                 writer.write(strJSON);
                 writer.flush();
                 writer.close();
             }
             urlConnection.connect();
+            Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
             return in.next();
         } catch (Exception e) {
             Log.d(TAG, "get: " + e);
@@ -65,7 +90,7 @@ public class APIClient {
      * @param recept
      * @return id of the shared recept on server or null if Exeption
      */
-    private String post(Recept recept, String params, @NonNull String clientKey) {  //clentKey může být null, používá se jen při backupu
+    private String postRecept(Recept recept, String params, @NonNull String clientKey) {  //clentKey může být null, používá se jen při backupu
         HttpURLConnection urlConnection = null;
         String res = null;
         try {
@@ -153,7 +178,7 @@ public class APIClient {
 
     public void share(Recept recept) {
         Thread thread = new Thread(() -> {
-            String res = post(recept, "/share", null);
+            String res = postRecept(recept, "/share", null);
             if (res == null) return;
 
             Intent sendIntent = new Intent();
@@ -169,7 +194,7 @@ public class APIClient {
 
     public void backup(ArrayList<Recept> recepty, String clientKey) {
         Thread thread = new Thread(() -> {
-            if (get("/backupReset", "{\"clientid\":\"" + clientKey + "\"}") == null) {
+            if (post("/backupReset", "{\"clientid\":\"" + clientKey + "\"}") == null) {
                 activity.runOnUiThread(() ->
                         Toast.makeText(activity, "Chyba při žádosti o zahájení zálohy", Toast.LENGTH_LONG).show());
                 return;
@@ -177,7 +202,7 @@ public class APIClient {
             int countOK = 0;
             int countErr = 0;
             for (Recept recept : recepty) {
-                if (post(recept, "/backup", clientKey) != null)
+                if (postRecept(recept, "/backup", clientKey) != null)
                     countOK++;
                 else countErr++;
             }
@@ -190,20 +215,21 @@ public class APIClient {
         thread.start();
     }
 
-    public void restoreBackup() {
+    public void restoreBackup(DatabaseHandler db, String clientKey) {
         Thread thread = new Thread(() -> {
-            String jsonStr = get("/backupIDs", null);
+            db.deleteAll();
+            String jsonStr = post("/backupIDs", "{\"clientid\":\"" + clientKey + "\"}");
             if (jsonStr == null) {
                 activity.runOnUiThread(() ->
                         Toast.makeText(activity, "Chyba při žádosti o obnovení zálohy", Toast.LENGTH_LONG).show());
                 return;
             }
             try {
-                System.exit(0);
                 JSONArray jsonArr = new JSONArray(jsonStr);
                 for (int i = 0; i < jsonArr.length(); i++) {
                     JSONObject jsonObject = jsonArr.getJSONObject(i);
                     String id = jsonObject.getString("_id");
+                    get("/backupRecept");
                 }
             } catch (JSONException e) {
             }

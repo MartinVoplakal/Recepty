@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         //restbackup
         APIClient api = new APIClient(this);
-        api.restoreBackup();//ret list recept
+        api.restoreBackup(db, clientkey);//ret list recept
     }
 }
 

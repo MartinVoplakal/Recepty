@@ -100,7 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Log.d(TAG, "syncNow: try");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         //String newKey = api.getClientID();
-        String newKey = api.get("/backupCode", null);
+        String newKey = api.get("/backupCode");
         if (newKey == null) {
             getActivity().runOnUiThread(() ->
                     Toast.makeText(getContext(), "Chyba při žádosti o nový klíč", Toast.LENGTH_LONG).show());
