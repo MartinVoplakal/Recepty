@@ -1,12 +1,10 @@
 package cz.voplakal.recepty;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
@@ -77,13 +75,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
               //vypnuto kvůli isChanged()          bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                                 .replace(R.id.fragment_container, NovyRecept.class, bundle).commit();
-                     //hide keyboard
+                        //hide keyboard
                         Activity activity = fragmentManager.getFragments().get(0).getActivity();
-                        View view = activity.getCurrentFocus();
+                        ((MainActivity) activity).hideKeyboard();
+                        /*View view = activity.getCurrentFocus();
                         if (activity != null && view != null) {
                             InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
+                        }*/
                     } else
                         //je to placeholder item > ic tu není a pod.
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)

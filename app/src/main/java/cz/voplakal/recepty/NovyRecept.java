@@ -5,7 +5,6 @@ import static cz.voplakal.recepty.MainActivity.navigationView;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -26,7 +25,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -227,11 +225,8 @@ public class NovyRecept extends Fragment {
             case R.id.menu_done_text:
                 if (!saveRecept()) break;
                 //hide keyboard
-                View view = getActivity().getCurrentFocus();
-                if (getActivity() != null && view != null) {
-                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
+                ((MainActivity) getActivity()).hideKeyboard();
+
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction().setReorderingAllowed(true)
                         .setCustomAnimations(
                                 R.anim.slide_in,  // enter
@@ -493,8 +488,10 @@ public class NovyRecept extends Fragment {
 
     boolean isChanged() {
         ArrayList<String> ingrs = new ArrayList<>();
+        String s;
         for (EditText i : ingredienceViews) {
-            ingrs.add(i.getText().toString().trim());
+            s = i.getText().toString().trim();
+            if (!s.isEmpty()) ingrs.add(s);
         }
 
         return !nazevReceptuView.getText().toString().trim().equals(nazev.trim())

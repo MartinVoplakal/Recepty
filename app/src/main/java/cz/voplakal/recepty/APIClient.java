@@ -38,29 +38,27 @@ public class APIClient {
      * @param req
      * @return String JSON nebo null pokud err
      */
-    public String get(String req) {    //musí být v thredu
+    public String get(String req, String strJSON) {    //musí být v thredu
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(DOMAIN + req);
             urlConnection = (HttpURLConnection) url.openConnection();
             Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
-            urlConnection.disconnect();
+            if (strJSON != null) {
+                OutputStreamWriter writer = new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8");
+                writer.write(strJSON);
+                writer.flush();
+                writer.close();
+            }
+            urlConnection.connect();
             return in.next();
         } catch (Exception e) {
+            Log.d(TAG, "get: " + e);
             return null;
         } finally {
             if (urlConnection != null)
                 urlConnection.disconnect();
         }
-    }
-
-    public String getClientID() throws IOException {    //musí být v thredu
-        URL url = new URL(DOMAIN + "/backupCode");
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
-        String res = in.next();
-        urlConnection.disconnect();
-        return res;
     }
 
     /**
@@ -171,6 +169,11 @@ public class APIClient {
 
     public void backup(ArrayList<Recept> recepty, String clientKey) {
         Thread thread = new Thread(() -> {
+            if (get("/backupReset", "{\"clientid\":\"" + clientKey + "\"}") == null) {
+                activity.runOnUiThread(() ->
+                        Toast.makeText(activity, "Chyba při žádosti o zahájení zálohy", Toast.LENGTH_LONG).show());
+                return;
+            }
             int countOK = 0;
             int countErr = 0;
             for (Recept recept : recepty) {
@@ -189,14 +192,20 @@ public class APIClient {
 
     public void restoreBackup() {
         Thread thread = new Thread(() -> {
-            get("/backupStart");
-            String jsonStr = get("/backupAll");
+            String jsonStr = get("/backupIDs", null);
+            if (jsonStr == null) {
+                activity.runOnUiThread(() ->
+                        Toast.makeText(activity, "Chyba při žádosti o obnovení zálohy", Toast.LENGTH_LONG).show());
+                return;
+            }
             try {
-                JSONObject jsonObject = new JSONObject(jsonStr);
-                JSONArray jsonArr = jsonObject.getJSONArray("");
-                //tady jsem zkončil
+                System.exit(0);
+                JSONArray jsonArr = new JSONArray(jsonStr);
+                for (int i = 0; i < jsonArr.length(); i++) {
+                    JSONObject jsonObject = jsonArr.getJSONObject(i);
+                    String id = jsonObject.getString("_id");
+                }
             } catch (JSONException e) {
-                e.printStackTrace();
             }
         });
         thread.start();

@@ -2,12 +2,14 @@ package cz.voplakal.recepty;
 
 import android.app.AlertDialog;
 import android.app.AppComponentFactory;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +44,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public MainActivity() {
         receptyMainList = new ReceptyArrayList<Recept>(this);
         Log.d(TAG, "MainActivity: Activity Constructor");
+    }
+
+    public void hideKeyboard() {
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -80,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (notifyFragmentExit()) return false;
+        hideKeyboard();
         switch (item.getItemId()) {
             case R.id.nav_recepty:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
@@ -92,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                         .replace(R.id.fragment_container, SettingsFragment.class, null).commit();
+                break;
         }
         //  navigationView.setCheckedItem(item.getItemId());      //tady drobná změna zakomentovaní a zamena true/false return
         drawer.closeDrawer(GravityCompat.START);
@@ -145,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // https://developer.android.com/training/camera/photobasics
     }
 
-    public void syncNow(View v) {
+    public void backup(View v) {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
         String clientkey = sharedPreferences.getString("clientkeyvalue", "");
@@ -163,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ArrayList<Recept> dbRecepty = db.getAllRecepty(false);
         api.backup(dbRecepty, clientkey);
     }
+
     public void restoreBackup(View v) {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);

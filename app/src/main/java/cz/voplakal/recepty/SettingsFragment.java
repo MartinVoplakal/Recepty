@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +19,6 @@ import android.widget.Toast;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-
-import java.io.IOException;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     SharedPreferences sharedPreferences;
@@ -31,17 +30,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         Preference copykey = findPreference("clientkey");
         copykey.setOnPreferenceClickListener(preference -> {
-            String value = sharedPreferences.getString("clientkeyvalue", "");
-            if (value.equals("")) {
-                try {
-                    createKey();
-                } catch (InterruptedException e) {
-                    Toast.makeText(getContext(), "Chyba při generování klíče", Toast.LENGTH_LONG).show();                }
-            }
-            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("Client ID", value);
-            clipboard.setPrimaryClip(clip);
-            Toast.makeText(getContext(), "Zkopírováno", Toast.LENGTH_LONG).show();
+            Thread thread = new Thread(() -> {
+                String value = sharedPreferences.getString("clientkeyvalue", "");
+                if (value.equals("")) {
+                    value  = createKey();
+                }
+                Looper.prepare();
+                ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Client ID", value);
+                clipboard.setPrimaryClip(clip);
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), "Zkopírováno", Toast.LENGTH_LONG).show());
+                Log.d(TAG, "onCreatePreferences: zkopírováno " + value);
+            });
+            thread.start();
             return true;
         });
         Preference resetKey = findPreference("resetkey");
@@ -74,13 +76,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     .setPositiveButton("Ok", (dialog, which) -> {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         String newKey = userInput.getText().toString();
-                        editor.putString("clientkeyvalue", newKey.substring(1, newKey.length() - 1));
+                        editor.putString("clientkeyvalue", newKey);
                         editor.commit();
-                        Toast.makeText(getContext(), "Klíč smazán, zkopírujte si nový", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Klíč uložen", Toast.LENGTH_LONG).show();
                     })
                     .setNegativeButton("Cancel",
                             new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,int id) {
+                                public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
                                 }
                             });
@@ -93,22 +95,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    public void createKey() throws InterruptedException {
+    public String createKey() {
         APIClient api = new APIClient(getActivity());
-        Thread thread = new Thread(() -> {
-            try {
-                Log.d(TAG, "syncNow: try");
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                String newKey = api.getClientID();
-                editor.putString("clientkeyvalue", newKey.substring(1, newKey.length() - 1));
-                editor.commit();
-                Log.d(TAG, "syncNow: " + sharedPreferences.getString("clientkeyvalue", ""));
-            } catch (IOException e) {
-                Log.d(TAG, "syncNow: " + e);
-            }
-        });
-        thread.start();
-        thread.join();
+        Log.d(TAG, "syncNow: try");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        //String newKey = api.getClientID();
+        String newKey = api.get("/backupCode", null);
+        if (newKey == null) {
+            getActivity().runOnUiThread(() ->
+                    Toast.makeText(getContext(), "Chyba při žádosti o nový klíč", Toast.LENGTH_LONG).show());
+            return null;
+        }
+        newKey = newKey.substring(1, newKey.length() - 1);
+        editor.putString("clientkeyvalue", newKey);
+        editor.commit();
+        Log.d(TAG, "syncNow: " + sharedPreferences.getString("clientkeyvalue", ""));
+        return newKey;
     }
 
 }
