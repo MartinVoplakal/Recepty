@@ -164,14 +164,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d(TAG, "syncNow: " + clientkey);
         if (clientkey.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Nejprve si uložte identifikační klíč");
+            builder.setTitle("Nejprve si zkopírujte/vložte identifikační klíč");
             builder.setPositiveButton("Ok", null);
             builder.create().show();
+            return;
         }
         //sync
         APIClient api = new APIClient(this);
-        //geta all receptay
-        //foreach > uplado
         ArrayList<Recept> dbRecepty = db.getAllRecepty(false);
         api.backup(dbRecepty, clientkey);
     }
@@ -183,9 +182,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (clientkey.equals("")) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Nejprve si uložte identifikační klíč");
+            builder.setTitle("Nejprve si zkopírujte/vložte identifikační klíč");
             builder.setPositiveButton("Ok", null);
             builder.create().show();
+            return;
         }
         //restbackup
         APIClient api = new APIClient(this);

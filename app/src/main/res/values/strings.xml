@@ -42,7 +42,7 @@
     <string name="Postup_hint">Jak jídlo připravit? Jak dlouho to zabere?</string>
     <string name="done">hotovo</string>
     <string name="upravit">upravit</string>
-    <string name="dialogPrazdnyRecept">Nemůžeš uložit recept bez názvu!</string>
+    <string name="dialogPrazdnyRecept">Název musí mít alespoň 3 písmena!</string>
     <string name="emptyName">Zatím tu nejsou žádně recepty</string>
     <string name="emptyIngredience">Můžeš nějaké přidat...</string>
     <string name="addFotoLabel">Přidat fotku</string>
@@ -58,6 +58,8 @@
     <string name="saveFirst">Nejprve prosím změny uložte.</string>
     <!-- Preference Titles -->
     <string name="backup">Zálohování</string>
+    <string name="restoreBackupSummary">Ze serveru budou stáhnuty zálohované recepty. Stav receptů,
+        které byly od poslední zálohy změněny bude obnoven do stavu ze zálohy. Nově přidaných receptů se změna nedotkne.</string>
 
     <!-- Messages Preferences -->
     <string name="backup_email">Email pro zálohování</string>

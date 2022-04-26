@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     Context context;
-    public static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
     public static final String DATABASE_NAME = "Recepty.db";
     public static final String TABLE_RECEPTY = "recepty";
     public static final String ID_KEY = "id";
@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_RECEPTY + "("
-                + ID_KEY + " INTEGER PRIMARY KEY,"
+                + ID_KEY + " INTEGER PRIMARY KEY AUTOINCREMENT,"   //AUTOINCREMENT
                 + NAZEV_KEY + " TEXT,"
                 + INGREDIENCE_KEY + " TEXT,"
                 + POSTUP_KEY + " TEXT,"
@@ -126,6 +126,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.delete(TABLE_RECEPTY, ID_KEY + " = ?",
                 new String[]{String.valueOf(id)});
         db.close();
+    }
+    public boolean checkIsExist(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String Query = "Select * from " + TABLE_RECEPTY + " where " + ID_KEY + " = " + id;
+        Cursor cursor = db.rawQuery(Query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 
     public void deleteAll() {

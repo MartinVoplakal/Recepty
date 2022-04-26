@@ -35,6 +35,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (value.equals("")) {
                     value  = createKey();
                 }
+                if(value == null || value.isEmpty()) return;
                 Looper.prepare();
                 ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("Client ID", value);
@@ -48,10 +49,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
         Preference resetKey = findPreference("resetkey");
         resetKey.setOnPreferenceClickListener(preference -> {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.remove("clientkeyvalue");
-            editor.commit();
-            Toast.makeText(getContext(), "Klíč smazán, zkopírujte si nový", Toast.LENGTH_LONG).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Klíč bude z aplikace odstraněn a budete nutné vložit/vygenerovat nový.");
+            builder.setPositiveButton("Ok", (dialog, which) -> {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("clientkeyvalue");
+                editor.commit();
+                Toast.makeText(getContext(), "Klíč smazán, zkopírujte si nový", Toast.LENGTH_LONG).show();
+            });
+            builder.setCancelable(true);
+            builder.setNegativeButton("Cancel", null);
+            builder.create().show();
             return true;
         });
         Preference insertKey = findPreference("insertKey");             //source: https://mkyong.com/android/android-prompt-user-input-dialog-example/

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -27,8 +29,7 @@ import java.util.Scanner;
 
 public class APIClient {
     Activity activity;
-    // String DOMAIN = "https://receptyserver.voplakm.repl.co";
-    String DOMAIN = "https://051b-88-103-224-25.ngrok.io";
+    String DOMAIN = "https://c063-2a02-25b0-aaaa-aaaa-5290-f6f0-2bac-0.eu.ngrok.io";
 
     public APIClient(Activity activity) {
         this.activity = activity;
@@ -49,8 +50,8 @@ public class APIClient {
             if (receptID != null) {
                 urlConnection.setRequestProperty("id", receptID);
             }
-            Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
             urlConnection.connect();
+            Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
             return in.next();
         } catch (Exception e) {
             Log.d(TAG, "get: " + e);
@@ -113,7 +114,7 @@ public class APIClient {
             jsonParam.put("nazev", recept.getNazev());
             jsonParam.put("ingredience", new JSONArray(recept.getIngredienceArr()));
             //if (!recept.getPostup().isEmpty())
-                jsonParam.put("postup", recept.getPostup());
+            jsonParam.put("postup", recept.getPostup());
             JSONArray pictures = new JSONArray();
             if (recept.getPicturePaths().length > 0) {
                 for (String path : recept.getPicturePaths())
@@ -235,7 +236,6 @@ public class APIClient {
 
     public void restoreBackup(DatabaseHandler db, String clientKey) {
         Thread thread = new Thread(() -> {
-             db.deleteAll();
             String jsonIdsStr = post("/backupIDs", "{\"clientid\":\"" + clientKey + "\"}");
             Log.d(TAG, jsonIdsStr);
             if (jsonIdsStr == null) {
@@ -256,11 +256,15 @@ public class APIClient {
                     for (int q = 0; q < ingr.length(); q++) {
                         ingrStr[q] = ingr.getString(q);
                     }
-                    for (int w = 0; w< ingrStr.length; w++) {       //pak smazat
+                    for (int w = 0; w < ingrStr.length; w++) {       //pak smazat
                         Log.d(TAG, "restoreBackup: " + ingrStr[w]);
                     }
                     Recept r = new Recept(resJson.getString("nazev"), ingrStr, resJson.getString("postup"), new String[0], resJson.getLong("id"));
-                    db.addRecept(r);
+                    if (db.checkIsExist(resJson.getLong("id")))
+                        db.updateRecept(r);
+                    else
+                        db.addRecept(r);
+
                     activity.runOnUiThread(() -> {
                         ((MainActivity) activity).loadAndApplyData();
                     });
@@ -280,14 +284,30 @@ public class APIClient {
 
     private String getStringImage(String path) {
         Log.d(TAG, "getStringImage: " + path);//zdroj: https://stackoverflow.com/questions/43574357/how-to-send-image-as-post-in-android-studio
-        File file = new File(path);
-
-        Bitmap bmp = BitmapFactory.decodeFile(file.toString());
+      //  File file = new File(path);
+        Bitmap bmp = BitmapFactory.decodeFile(path);    //file.toString()
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
+    }
+
+    private String saveImageFromString(String str) throws IOException {
+        String imageFileName = "JPEG_11_";
+        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */ //temp file >> na konci je ještě automatický kus názvu
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        byte[] bytes = Base64.decode(str, Base64.DEFAULT);
+        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        FileOutputStream fOut = new FileOutputStream(image);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+        fOut.flush();
+        fOut.close();
+        return image.getAbsolutePath();
     }
 
 }

@@ -103,13 +103,12 @@ public class NovyRecept extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d(TAG, "onViewCreated: novyrecept");
         nazevReceptuView = getView().findViewById(R.id.nazev_receptu);
 
         postupView = getView().findViewById(R.id.postup_na_pripravu_text);
         linearLayout = getView().findViewById(R.id.linearLayout);
-        Button btn = getView().findViewById(R.id.takePictureBtn);
-        btn.setOnClickListener(v -> dispatchTakePictureIntentFull());
+        Button addPicture = getView().findViewById(R.id.takePictureBtn);
+        addPicture.setOnClickListener(v -> dispatchTakePictureIntentFull());
         //setEditability(editability);
         addIngred = getView().findViewById(R.id.addIngr);
         addIngred.setOnClickListener(v -> {
@@ -150,20 +149,18 @@ public class NovyRecept extends Fragment {
             ingredience = new ArrayList<>();
             addIngrToGroup(null);
         }
+        Log.d(TAG, "onViewCreated: id: " + idReceptu);
     }
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: novyrecept");
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        //  super.onCreateOptionsMenu(menu, inflater);
-        Log.d(TAG, "onCreateOptionsMenu: onCreateOptionsMenu");
         inflater.inflate(R.menu.edit, menu);
 
     }
@@ -184,31 +181,6 @@ public class NovyRecept extends Fragment {
             return true;
         } else return false;
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: ");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: ");
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceState: ");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView: ");
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -290,7 +262,6 @@ public class NovyRecept extends Fragment {
     //skrytií určitého prvku horní nadídky...
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        Log.d(TAG, "onPrepareOptionsMenu: novyrecept");
         topMenu = menu;
         super.onPrepareOptionsMenu(menu);
         setEditability(editability);
@@ -313,7 +284,7 @@ public class NovyRecept extends Fragment {
 
     //return if changes were or not saved
     boolean saveRecept() {
-        if (nazevReceptuView.getText().toString().trim().equals("")) {
+        if (nazevReceptuView.getText().toString().trim().length() < 3) {
             //https://www.javatpoint.com/android-alert-dialog-example
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialogPrazdnyRecept);
@@ -369,7 +340,6 @@ public class NovyRecept extends Fragment {
     }
 
     private void setEditability(boolean editability) {
-        Log.d(TAG, "setEditability:");
         this.editability = editability;
         topMenu.findItem(R.id.menu_done).setVisible(editability);
         topMenu.findItem(R.id.menu_done_text).setVisible(editability);
@@ -443,9 +413,7 @@ public class NovyRecept extends Fragment {
 
         try {
             File file = new File(path);
-
             Bitmap imageBitmap = BitmapFactory.decodeFile(file.toString());
-
             ImageView imageView = (ImageView) LayoutInflater.from(getContext()).inflate(R.layout.image_layout, null);
         //    imageView.setPadding(0, 20, 0, 0);
             imageView.setImageBitmap(imageBitmap);
