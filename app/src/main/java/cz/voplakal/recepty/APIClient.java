@@ -38,11 +38,17 @@ public class APIClient {
      * @param req
      * @return String JSON nebo null pokud err
      */
-    public String get(String req) {    //musí být v thredu
+    public String get(String req, String clientKey, String receptID) {    //musí být v thredu
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(DOMAIN + req);
             urlConnection = (HttpURLConnection) url.openConnection();
+            if (clientKey != null) {
+                urlConnection.setRequestProperty("clientkey", clientKey);
+            }
+            if (receptID != null) {
+                urlConnection.setRequestProperty("id", receptID);
+            }
             Scanner in = new Scanner(urlConnection.getInputStream()).useDelimiter("\\A");
             urlConnection.connect();
             return in.next();
@@ -106,7 +112,8 @@ public class APIClient {
             JSONObject jsonParam = new JSONObject();
             jsonParam.put("nazev", recept.getNazev());
             jsonParam.put("ingredience", new JSONArray(recept.getIngredienceArr()));
-            jsonParam.put("postup", recept.getPostup());
+            //if (!recept.getPostup().isEmpty())
+                jsonParam.put("postup", recept.getPostup());
             JSONArray pictures = new JSONArray();
             if (recept.getPicturePaths().length > 0) {
                 for (String path : recept.getPicturePaths())
@@ -178,8 +185,19 @@ public class APIClient {
 
     public void share(Recept recept) {
         Thread thread = new Thread(() -> {
+            activity.runOnUiThread(() -> Toast.makeText(activity, "Odesílání receptu", Toast.LENGTH_LONG).show());
+            if (recept.getPicturePaths().length > 5) {
+                activity.runOnUiThread(() -> Toast.makeText(activity, "Odesílání více než 5 obrázky. To server neakcepuje. Smažte prosím některé a zkuste to znovu", Toast.LENGTH_LONG).show());
+                return;
+            }
+            if (recept.getPicturePaths().length > 3)
+                activity.runOnUiThread(() -> Toast.makeText(activity, "Odesílání více než 3 obrázky. To může chvíli trvat", Toast.LENGTH_LONG).show());
+
             String res = postRecept(recept, "/share", null);
-            if (res == null) return;
+            if (res == null) {
+                activity.runOnUiThread(() -> Toast.makeText(activity, "Odesílání selhalo", Toast.LENGTH_LONG).show());
+                return;
+            }
 
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
@@ -217,26 +235,48 @@ public class APIClient {
 
     public void restoreBackup(DatabaseHandler db, String clientKey) {
         Thread thread = new Thread(() -> {
-            db.deleteAll();
-            String jsonStr = post("/backupIDs", "{\"clientid\":\"" + clientKey + "\"}");
-            if (jsonStr == null) {
+             db.deleteAll();
+            String jsonIdsStr = post("/backupIDs", "{\"clientid\":\"" + clientKey + "\"}");
+            Log.d(TAG, jsonIdsStr);
+            if (jsonIdsStr == null) {
                 activity.runOnUiThread(() ->
                         Toast.makeText(activity, "Chyba při žádosti o obnovení zálohy", Toast.LENGTH_LONG).show());
                 return;
             }
             try {
-                JSONArray jsonArr = new JSONArray(jsonStr);
-                for (int i = 0; i < jsonArr.length(); i++) {
-                    JSONObject jsonObject = jsonArr.getJSONObject(i);
-                    String id = jsonObject.getString("_id");
-                    get("/backupRecept");
+                JSONArray jsonIdsArr = new JSONArray(jsonIdsStr);
+                for (int i = 0; i < jsonIdsArr.length(); i++) {
+                    String id = jsonIdsArr.getJSONObject(i).getString("_id");
+                    String strResJson = get("/backupRecept", clientKey, id);
+                    Log.d(TAG, "restoreBackup: " + strResJson);
+                    JSONObject resJson = new JSONObject(strResJson);
+                    JSONArray ingr = resJson.getJSONArray("ingredience");
+                    String ingrStr[] = new String[ingr.length()];
+                    Log.d(TAG, "restoreBackup: " + ingr.length());
+                    for (int q = 0; q < ingr.length(); q++) {
+                        ingrStr[q] = ingr.getString(q);
+                    }
+                    for (int w = 0; w< ingrStr.length; w++) {       //pak smazat
+                        Log.d(TAG, "restoreBackup: " + ingrStr[w]);
+                    }
+                    Recept r = new Recept(resJson.getString("nazev"), ingrStr, resJson.getString("postup"), new String[0], resJson.getLong("id"));
+                    db.addRecept(r);
+                    activity.runOnUiThread(() -> {
+                        ((MainActivity) activity).loadAndApplyData();
+                    });
+                    activity.runOnUiThread(() ->
+                            Toast.makeText(activity, "Záloha obnovena", Toast.LENGTH_SHORT).show());
                 }
             } catch (JSONException e) {
+                Log.d(TAG, "restoreBackup: " + e);
+                activity.runOnUiThread(() ->
+                        Toast.makeText(activity, "Chyba při obnovení zálohy", Toast.LENGTH_LONG).show());
             }
         });
         thread.start();
 
     }
+
 
     private String getStringImage(String path) {
         Log.d(TAG, "getStringImage: " + path);//zdroj: https://stackoverflow.com/questions/43574357/how-to-send-image-as-post-in-android-studio

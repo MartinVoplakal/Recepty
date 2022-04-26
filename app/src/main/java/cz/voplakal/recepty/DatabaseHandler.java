@@ -103,7 +103,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //                Log.d("MYTAG", cursor.getString(1));
 //                Log.d("MYTAG", cursor.getString(2));
                 // Adding contact to list
-                list.add(new Recept(cursor, true));
+                list.add(new Recept(cursor, smaller));
             } while (cursor.moveToNext());
         }
         return list;

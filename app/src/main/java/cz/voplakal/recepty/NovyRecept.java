@@ -4,7 +4,6 @@ import static cz.voplakal.recepty.MainActivity.TAG;
 import static cz.voplakal.recepty.MainActivity.navigationView;
 
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -398,22 +397,12 @@ public class NovyRecept extends Fragment {
     }
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
-
     /*více v MainActivtiy onActivityResult()
      */
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            // display error state to the user     //https://developer.android.com/training/camera/photobasics
-        }
-    }
 
     private void dispatchTakePictureIntentFull() {              // https://developer.android.com/training/camera/photobasics
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (true) {// if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
             // Create the File where the photo should go        //pozor if true??? ?
             File photoFile = null;
             try {
@@ -430,8 +419,6 @@ public class NovyRecept extends Fragment {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
-        } else Toast.makeText(getContext(), "else ERRORRRRRR", Toast.LENGTH_SHORT).show();
-
     }
 
     private File createImageFile() throws IOException {
@@ -453,20 +440,22 @@ public class NovyRecept extends Fragment {
         if (path.trim().equals("")) return;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
         try {
             File file = new File(path);
+
             Bitmap imageBitmap = BitmapFactory.decodeFile(file.toString());
 
-        //    ImageView imageView = new ImageView(getContext());
-            //ImageView imageView = new ImageView(getContext(), null, R.style.MyImageViewStyle);    nefunguje
             ImageView imageView = (ImageView) LayoutInflater.from(getContext()).inflate(R.layout.image_layout, null);
         //    imageView.setPadding(0, 20, 0, 0);
             imageView.setImageBitmap(imageBitmap);
             imageView.setOnClickListener(v -> {
+                Log.d(TAG, "loadPicture: " + picturePaths.size());
+                Log.d(TAG, "loadPicture: " + actualPicturePaths.size());
                 if (editability) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle(R.string.deletePicture);
-                    builder.setPositiveButton("Ok", (dialog, which) -> deletePicture(v, file));
+                    builder.setPositiveButton("Ok", (dialog, which) -> deletePicture(imageView, path));
                     builder.setNegativeButton("Cancel", null);
                     builder.create().show();
                 }
@@ -474,17 +463,19 @@ public class NovyRecept extends Fragment {
             linearLayout.addView(imageView);
             pictureViews.add(imageView);
         } catch (Exception e) {
-            Toast.makeText(getContext(), "ERR při načítání obr", Toast.LENGTH_SHORT).show();
+            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "ERR při načítání obr", Toast.LENGTH_SHORT).show());
         }
         updateImageForeground();
     }
 
-    private void deletePicture(View v, File file) {
+    private void deletePicture(View v, String path) {
         try {
+            actualPicturePaths.remove(path);
             linearLayout.removeView(v);
+            File file = new File(path);
             file.delete();
         } catch (Exception e) {
-            Toast.makeText(getContext(), "ERR při mazání obr", Toast.LENGTH_SHORT).show();
+            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), "ERR při mazání obr", Toast.LENGTH_SHORT).show());
         }
     }
 

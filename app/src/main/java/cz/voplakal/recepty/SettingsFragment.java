@@ -40,7 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 ClipData clip = ClipData.newPlainText("Client ID", value);
                 clipboard.setPrimaryClip(clip);
                 getActivity().runOnUiThread(() ->
-                        Toast.makeText(getContext(), "Zkopírováno", Toast.LENGTH_LONG).show());
+                        Toast.makeText(getContext(), "Zkopírováno", Toast.LENGTH_SHORT).show());
                 Log.d(TAG, "onCreatePreferences: zkopírováno " + value);
             });
             thread.start();
@@ -100,7 +100,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Log.d(TAG, "syncNow: try");
         SharedPreferences.Editor editor = sharedPreferences.edit();
         //String newKey = api.getClientID();
-        String newKey = api.get("/backupCode");
+        String newKey = api.get("/backupCode", null, null);
         if (newKey == null) {
             getActivity().runOnUiThread(() ->
                     Toast.makeText(getContext(), "Chyba při žádosti o nový klíč", Toast.LENGTH_LONG).show());
