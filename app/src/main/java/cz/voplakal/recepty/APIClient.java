@@ -29,7 +29,8 @@ import java.util.Scanner;
 
 public class APIClient {
     Activity activity;
-    String DOMAIN = "https://c063-2a02-25b0-aaaa-aaaa-5290-f6f0-2bac-0.eu.ngrok.io";
+    //String DOMAIN = "https://c063-2a02-25b0-aaaa-aaaa-5290-f6f0-2bac-0.eu.ngrok.io";  pokud použito https může se odkomentovat povolení "clear text" v manifestu
+    String DOMAIN = "http://176.102.66.53:3000";
 
     public APIClient(Activity activity) {
         this.activity = activity;

@@ -205,8 +205,8 @@ public class NovyRecept extends Fragment {
                                 R.anim.fade_out,  // exit
                                 R.anim.fade_in,   // popEnter
                                 R.anim.slide_out  // popExit
-                        ).replace(R.id.fragment_container, Recepty.class, null);
-                if (!novyRecept) transaction.addToBackStack(null);
+                        ).replace(R.id.fragment_container, Recepty.class, null);   //TODO nepřecházet domů ale jen obnovit fragmetn pomocí
+                if (!novyRecept) transaction.addToBackStack(null);                  //TODO Bundle bundle = new Bundle(); bundle.putLong(Recept.ID, id);
                 else getParentFragmentManager().popBackStackImmediate();
                 transaction.commit();
 

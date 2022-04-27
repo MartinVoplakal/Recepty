@@ -60,7 +60,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         fileOrDirectory.delete();
     }
 
-    // code to add the new contact
     void addRecept(Recept recept) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -71,7 +70,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
-    // code to get the single recept
     Recept getRecept(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -99,17 +97,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-//                Log.d("MYTAG", cursor.getString(0));
-//                Log.d("MYTAG", cursor.getString(1));
-//                Log.d("MYTAG", cursor.getString(2));
-                // Adding contact to list
+
+                // Adding to list
                 list.add(new Recept(cursor, smaller));
             } while (cursor.moveToNext());
         }
         return list;
     }
 
-    // code to update the single contact
     public int updateRecept(Recept recept) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -120,7 +115,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(recept.getId())});
     }
 
-    // Deleting single contact
     public void deleteRecept(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_RECEPTY, ID_KEY + " = ?",
@@ -147,7 +141,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Getting contacts Count
     public int getContactsCount() {
         String countQuery = "SELECT  * FROM " + TABLE_RECEPTY;
         SQLiteDatabase db = this.getReadableDatabase();
