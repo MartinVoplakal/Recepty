@@ -2,7 +2,6 @@ package cz.voplakal.recepty;
 
 import static cz.voplakal.recepty.MainActivity.navigationView;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,10 +11,11 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-
+/**
+ * fragment s vyhledávacím polem receptů a jeho výsledky
+ */
 public class Recepty extends Fragment {
 
     private final String TAG = MainActivity.TAG;
@@ -54,54 +54,38 @@ public class Recepty extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
+            /**
+             * filtrování výsledků vyhledávání při změně textu
+             */
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d("TChanged", "afterTextChanged: ");
-                if (System.currentTimeMillis() - lastCheck > 0) {   // PAK ZMĚNIT NA CCA 10MS
+                if (System.currentTimeMillis() - lastCheck > 80) {   // pro zmenšení zátěže systému se při rychlém psaní metoda znovu nevoĺá
                     lastCheck = System.currentTimeMillis();
-
+                //pokud ještě běží dřívější vláko zastavit
                     if (lastThread != null) lastThread.interrupt();
                     lastThread = new Thread(() -> {
                         String newFilter = searchView.getText().toString().toLowerCase().trim();
 
                         if (lastFilter.length() < newFilter.length() && newFilter.contains(lastFilter)) {
                             MainActivity.receptyMainList.filter(newFilter);
-                            //MainActivity.receptyMainList.removeIf(recept -> !(recept.getNazev().toLowerCase().contains(newFilter)
-                            //        || recept.getIngredience().toLowerCase().contains(newFilter)));
                         } else {
-                            System.out.println("recovrey");
+                            //obnova dat
                             MainActivity.receptyMainList.restoreDatabse();
                             MainActivity.receptyMainList.filter(newFilter);
                         }
                         if (Thread.currentThread().isInterrupted()) {
-                            Log.d("interr", Thread.currentThread().getName() + " is Interrupted.............................");
                             return;
                         } else lastFilter = newFilter;
-
-
-                        //       System.out.println(MainActivity.receptyMainList.toString());
-
-                        //notify dataSetChanged() musí být voláno v "originálním" vlákně jinak:
+                        //notify dataSetChanged() musí být voláno v Ui vlákně jinak:
                         //      android.view.ViewRootImpl$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
                         getActivity().runOnUiThread(() -> {
                             MainActivity.receptyMainList.notifyDataSetChanged();
                         });
 
-                        //  Thread.yield();
                     });
-                    lastThread.start();         //POZOR PAK ZMĚNIT NA STADARTNÍ PUŠTĚNÍ VLÁKNA start()
+                    lastThread.start();
                 }
             }
         });
-
-
     }
-
-    /*@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recepty_search, container, false);
-    }*/
 }

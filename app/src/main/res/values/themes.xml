@@ -5,20 +5,18 @@
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/purple_700</item>
+        <item name="colorSecondary">@color/dark_orange</item>
         <item name="colorSecondaryVariant">@color/purple_700</item>   //cursor
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
-        <!--<item name="android:imageButtonStyle">@style/MyImageViewStyle</item>-->
+
     </style>
     <!--my new style-->
     <style name="Theme.Recepty.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <!--<style name="MyImageViewStyle" parent="android:Widget.Image">
-        <item name="android:layout_marginTop">20dp</item>
-    </style>-->
+
 </resources>

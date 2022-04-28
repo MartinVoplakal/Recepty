@@ -13,15 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A fragment representing a list of Items.
+ * In this case list of Receipts
+ * Is shown under search field
  */
 public class ItemListFragment extends Fragment {
 
-    //moje
     MyItemRecyclerViewAdapter myItemRecyclerViewAdapter;
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
 
     /**
@@ -31,16 +30,6 @@ public class ItemListFragment extends Fragment {
     public ItemListFragment() {
         super(R.layout.fragment_item_list);
     }
-
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    /*public static ItemFragment newInstance(int columnCount) {
-        ItemFragment fragment = new ItemFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,19 +58,6 @@ public class ItemListFragment extends Fragment {
             MainActivity.receptyMainList.setAdapter(myItemRecyclerViewAdapter);
             recyclerView.setAdapter(myItemRecyclerViewAdapter);
         }
-//        addItem(createPlaceholderItem("Svíčková na smetaně", "Svíčky, smetana"));
-//        addItem(createPlaceholderItem("Buřtguláš", "buřty"));
-//        myItemRecyclerViewAdapter.clear();
-//        addItem(createPlaceholderItem("Psíčková", "psy"));
-//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-//        addItem(createPlaceholderItem("Psíčková", "psy"));
-//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-//        addItem(createPlaceholderItem("Psíčková", "psy"));
-//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-//        addItem(createPlaceholderItem("Psíčková", "psy"));
-//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "uzený..."));
-//        addItem(createPlaceholderItem("Plněné knedlíky uzeným", "konec..."));
-
         return view;
     }
 }

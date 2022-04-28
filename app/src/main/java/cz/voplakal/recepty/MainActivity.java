@@ -1,7 +1,6 @@
 package cz.voplakal.recepty;
 
 import android.app.AlertDialog;
-import android.app.AppComponentFactory;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +9,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,24 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// ÚPLNĚ ZBYTEČNĚ NAČÍTÁM RECEPT ZNOVA PŘI OTEVŘENÍ, PROTOŽE V TOM LISTU UŽ STEJNĚ JE
-
-
+/**
+ * Main activity obsahuje všechny klíčové metody aplikace a funkcionalitu dále distribuuje do dalších class
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static String TAG = "MYTAG";
     private DrawerLayout drawer;
     public static NavigationView navigationView;
-    public static ReceptyArrayList<Recept> receptyMainList;
+    public static ArrayListRenewable<Recept> receptyMainList;
     DatabaseHandler db;
 
-    /**
-     * Default constructor for AppCompatActivity. All Activities must have a default constructor
-     * for API 27 and lower devices or when using the default
-     * {@link AppComponentFactory}.
-     */
     public MainActivity() {
-        receptyMainList = new ReceptyArrayList<Recept>(this);
-        Log.d(TAG, "MainActivity: Activity Constructor");
+        receptyMainList = new ArrayListRenewable<Recept>(this);
     }
 
     public void hideKeyboard() {
@@ -57,13 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "Activity onCreate");
-        //  receptyMainList = loadDataFromDatabase();
-//        if (receptyMainList == null)
-//            receptyMainList = new ReceptyArrayList<Recept>(this);
-
         db = new DatabaseHandler(this);
-        //   db.deleteAll();
         loadAndApplyData();
 
         setContentView(R.layout.activity_main);
@@ -80,11 +68,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).disallowAddToBackStack()
                     .replace(R.id.fragment_container, Recepty.class, null).commit();
             navigationView.setCheckedItem(R.id.nav_recepty);
         }
-        //navigationView.setCheckedItem(getSupportFragmentManager().getFragments().get(0).getId());
     }
 
     @Override
@@ -105,18 +92,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .replace(R.id.fragment_container, SettingsFragment.class, null).commit();
                 break;
         }
-        //  navigationView.setCheckedItem(item.getItemId());      //tady drobná změna zakomentovaní a zamena true/false return
         drawer.closeDrawer(GravityCompat.START);
         return true; //return true to select the clicked item
     }
 
+    /**
+     * vyresetuje list receptů a načte ho znovu
+     */
     public void loadAndApplyData() {
         receptyMainList.clear();
         receptyMainList.addAll(db.getAllRecepty(true));
         if (receptyMainList.isEmpty()) receptyMainList.add(
                 new Recept(this.getResources().getString(R.string.emptyName), new String[]{
-                        this.getResources().getString(R.string.emptyIngredience)}, null, null, -1)); //id out of range to deactivate onclick
-    }
+                        this.getResources().getString(R.string.emptyIngredience)}, null, null, -1)); //id menší než jedna, následně se deaktivuje onClick a nastaví:
+    }                                                                                    // "Zatím nejsou žádné recepty, vytvořte..."
 
     @Override
     public void onBackPressed() {
@@ -129,34 +118,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    //return true if children handled the event
+    /**
+     * @return true if children handled the event
+     */
     public boolean notifyFragmentExit() {
         List fragmentList = getSupportFragmentManager().getFragments();
         boolean handled = false;
-        //zajímavé žešení dalších vrstev fragment manageru
-        //for(Object f : fragmentList) {
-        //nebo jen nejsvrchnější fragment
         Object f = fragmentList.get(0);
         if (f instanceof NovyRecept) {
             handled = ((NovyRecept) f).onExit();
-            /*if (handled) {
-                break;
-            }*/
         }
-        // }
         return handled;
     }
 
+    /**
+     * Využíváno při focení obrázku
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
         NovyRecept activeFragment = (NovyRecept) getSupportFragmentManager().getFragments().get(0);
         activeFragment.loadPicture(activeFragment.actualPicturePaths.get(activeFragment.actualPicturePaths.size() - 1));
         if (!activeFragment.novyRecept) activeFragment.saveRecept();
         // https://developer.android.com/training/camera/photobasics
     }
 
+    /**
+     * onclick z nastavení pro zahájení obnovy z backupu
+     */
     public void backup(View v) {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -170,11 +159,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return;
         }
         //sync
+        runOnUiThread(() ->
+                Toast.makeText(this, "Zálohování zahájeno. Toto může chvíli trvat.", Toast.LENGTH_LONG).show());
         APIClient api = new APIClient(this);
         ArrayList<Recept> dbRecepty = db.getAllRecepty(false);
         api.backup(dbRecepty, clientkey);
     }
 
+    /**
+     * onclick z nastavení pro zahájení obnovy z backupu
+     */
     public void restoreBackup(View v) {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -188,8 +182,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return;
         }
         //restbackup
+        runOnUiThread(() ->
+                Toast.makeText(this, "Obnova ze zálohy", Toast.LENGTH_LONG).show());
         APIClient api = new APIClient(this);
-        api.restoreBackup(db, clientkey);//ret list recept
+        api.restoreBackup(db, clientkey);
     }
 }
 

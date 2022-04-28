@@ -6,16 +6,17 @@
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/foreground_trash.xml" value="0.272" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_done.xml" value="0.1345" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_edit.xml" value="0.272" />
+        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_fork_knife.xml" value="0.324" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3671875" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.208" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_novyrecept.xml" value="0.272" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_recepty.xml" value="0.3671875" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/drawable/ic_trash.xml" value="0.1345" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/activity_galery.xml" value="0.23854166666666668" />
-        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/activity_main.xml" value="0.33697916666666666" />
+        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/activity_main.xml" value="0.24941905499612704" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_item.xml" value="0.75" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_item_list.xml" value="0.30104166666666665" />
-        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_novy_recept.xml" value="0.5" />
+        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_novy_recept.xml" value="0.25" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_recepty.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_recepty_search.xml" value="0.25364583333333335" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/fragment_test.xml" value="0.30104166666666665" />
@@ -30,7 +31,7 @@
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/recept_search_item.xml" value="0.3672907488986784" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/layout/textview.xml" value="0.26614583333333336" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/menu/drawer_menu.xml" value="0.35104166666666664" />
-        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/menu/edit.xml" value="0.275" />
+        <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/menu/edit.xml" value="0.1" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2225" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2225" />
         <entry key="..\:/Users/marti.HP-MARTIN/AndroidStudioProjects/Recepty/app/src/main/res/xml/file_paths.xml" value="0.24947916666666667" />

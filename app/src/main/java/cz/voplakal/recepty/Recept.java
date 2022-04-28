@@ -12,6 +12,10 @@ import android.text.TextUtils;
 
 import java.util.Arrays;
 
+/**
+ * Třída reprezentuje recept jako takový a jeho data,
+ * byla vytvořena pro zjednodušení předávání dat ve zbytku aplikace
+ */
 public class Recept {
     //bundle keys tohle bych nejradši sloučil s kláči DB
     public static final String ID = "recept_ID";
@@ -26,7 +30,6 @@ public class Recept {
     private String postup;
     private String[] picturePaths; //optional
 
-    //pro listy, tzv small verze
     public Recept(String nazev, String[] ingredience, String postup, String[] picturePath) {
         this.nazev = nazev;
         this.ingredience = ingredience;
@@ -39,7 +42,12 @@ public class Recept {
         this.id = id;
     }
 
-    //if small true fill only nazev id ingredience
+
+    /**
+     * Usnadňuje vytvoření tohoto objektu přímo při čtení z databáze
+     * @param cursor
+     * @param small pokdy je true vloží pouze natev a ingredience
+     */
     public Recept(Cursor cursor, boolean small) {
         this.id = cursor.getInt(0);
         this.nazev = cursor.getString(1);
@@ -49,6 +57,12 @@ public class Recept {
         this.picturePaths = derialize(cursor.getString(4));
     }
 
+    /**
+     *
+     * @param values objekt do kterého data vložit
+     * @param withId jestli použít i ID receptu
+     * @return ContentValues připravená data do objektu pro vložení do databáze
+     */
     public ContentValues insertIn(ContentValues values, boolean withId) {
         values.put(NAZEV_KEY, getNazev());
         values.put(INGREDIENCE_KEY, serialize(getIngredienceArr()));
@@ -59,10 +73,14 @@ public class Recept {
         return values;
     }
 
-    //převod array s picture path do a ze stringu který se dá uložit do DB
-    //do db je potřeba zapsat jednoduchý string, jako nejjednodušší je jako seprarátor použití čárky, ta se ale můžě teoreticky objevit v path
+
+
     String ARRAY_DIVIDER = "#gyarab684as";
 
+    /**
+     * zde bylo potřeba vyřešit ukádání pole stringů do databáze, což SQL nepodporuje a je tak nutné
+     * je převést na String, Jako oddělovač je použit ARRAY_DIVIDER
+     */
     private String serialize(String content[]) {
         return TextUtils.join(ARRAY_DIVIDER, content);
     }
@@ -71,26 +89,18 @@ public class Recept {
         return content.split(ARRAY_DIVIDER);
     }
 
+    //getters
     public long getId() {
         return id;
-    }
-
-    public void setNazev(String nazev) {
-        this.nazev = nazev;
-    }
-
-    public void setIngredience(String[] ingredience) {
-        this.ingredience = ingredience;
-    }
-
-    public void setPostup(String postup) {
-        this.postup = postup;
     }
 
     public String getNazev() {
         return nazev;
     }
 
+    /**
+     * @return ingredients.toString striped form {} on the start and end
+     */
     public String getIngredience() {
         String s = Arrays.toString(ingredience);
         return s.substring(1, s.length() - 1);

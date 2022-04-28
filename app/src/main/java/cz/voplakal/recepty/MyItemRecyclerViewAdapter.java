@@ -14,7 +14,10 @@ import java.util.List;
 
 import cz.voplakal.recepty.databinding.FragmentItemBinding;
 
-
+/**
+ * Adapter pro RecyclerView
+ * stará se o vykreslování výsledků vyhledávání pod vyhledávacím políčkem
+ */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<Recept> mValues;
@@ -32,9 +35,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        //     holder.mItem = mValues.get(position);
         //Pokud je text příliš dlouhý
-
         String ingr = mValues.get(position).getIngredience();
         if (ingr.length() > 60)
             ingr = ingr.substring(0, 60) + "...";
@@ -48,22 +49,13 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         return mValues.size();
     }
 
-    public void clear() {
-        int size = mValues.size();
-        if (size > 0) {
-            //for (int i = 0; i < size; i++) {
-            //      mValues.remove(0);
-            // }
-            mValues.clear();
-        }
-    }
-
-    //class
+    /**
+     * třída reprezentujícíc jeden kronkrétní recept v RecyclerView
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView nazevView;
         public final TextView ingredienceView;
         public long id;
-        FragmentManager fragmentManager1;
 
         public ViewHolder(FragmentItemBinding binding) {
             super(binding.getRoot());
@@ -72,24 +64,16 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (id >= 0) {  //id < 0 is when object is placeholder in empty list
+                    if (id >= 0) {  //id < 0 je pokud má být prvek pouze placeholder "Nic tu není atd...
                         Bundle bundle = new Bundle();
                         bundle.putLong(Recept.ID, id);
-                        //bundle.putString(Recept.NAZEV, nazevView.getText().toString());
-                        //bundle.putString(Recept.INGREDIENCE, ingredienceView.getText().toString());
-              //vypnuto kvůli isChanged()          bundle.putString(Recept.POSTUP, v.getContext().getResources().getString(R.string.loading));
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                                 .replace(R.id.fragment_container, NovyRecept.class, bundle).commit();
-                        //hide keyboard
+                        //shovat klávesnici
                         Activity activity = fragmentManager.getFragments().get(0).getActivity();
                         ((MainActivity) activity).hideKeyboard();
-                        /*View view = activity.getCurrentFocus();
-                        if (activity != null && view != null) {
-                            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }*/
                     } else
-                        //je to placeholder item > ic tu není a pod.
+                        //je to placeholder item po kliknutí vytvořit recept
                         fragmentManager.beginTransaction().setReorderingAllowed(true).addToBackStack(null)
                                 .replace(R.id.fragment_container, NovyRecept.class, null).commit();
                 }

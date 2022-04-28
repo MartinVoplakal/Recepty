@@ -27,6 +27,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * třída pro práci se serverovým API
+ */
 public class APIClient {
     Activity activity;
     //String DOMAIN = "https://c063-2a02-25b0-aaaa-aaaa-5290-f6f0-2bac-0.eu.ngrok.io";  pokud použito https může se odkomentovat povolení "clear text" v manifestu
@@ -39,8 +42,9 @@ public class APIClient {
     /**
      * @param req
      * @return String JSON nebo null pokud err
+     * musí se spouštět ve vlákně
      */
-    public String get(String req, String clientKey, String receptID) {    //musí být v thredu
+    public String get(String req, String clientKey, String receptID) {
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(DOMAIN + req);
@@ -63,7 +67,10 @@ public class APIClient {
         }
     }
 
-    public String post(String req, String strJSON) {    //musí být v thredu
+    /**
+     * musí se spouštět ve vlákně
+     */
+    public String post(String req, String strJSON) {
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(DOMAIN + req);
@@ -97,8 +104,10 @@ public class APIClient {
     /**
      * @param recept
      * @return id of the shared recept on server or null if Exeption
+     * <br>
+     * clentKey může být null, používá se jen při backupu
      */
-    private String postRecept(Recept recept, String params, @NonNull String clientKey) {  //clentKey může být null, používá se jen při backupu
+    private String postRecept(Recept recept, String params, @NonNull String clientKey) {
         HttpURLConnection urlConnection = null;
         String res = null;
         try {
@@ -282,11 +291,13 @@ public class APIClient {
 
     }
 
-
+    /**
+     * převede a vrátí obrázek v podobě stringu
+     * @param path absolutní cesta k souboru
+     * @return picture in strig format
+     */
     private String getStringImage(String path) {
-        Log.d(TAG, "getStringImage: " + path);//zdroj: https://stackoverflow.com/questions/43574357/how-to-send-image-as-post-in-android-studio
-      //  File file = new File(path);
-        Bitmap bmp = BitmapFactory.decodeFile(path);    //file.toString()
+        Bitmap bmp = BitmapFactory.decodeFile(path);   //zdroj: https://stackoverflow.com/questions/43574357/how-to-send-image-as-post-in-android-studio
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();

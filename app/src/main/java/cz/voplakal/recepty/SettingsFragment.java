@@ -20,12 +20,15 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+/**
+ * Fragment s nastaveními aplikace
+ */
 public class SettingsFragment extends PreferenceFragmentCompat {
     SharedPreferences sharedPreferences;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.root_preferences, rootKey);
+        setPreferencesFromResource(R.xml.settings, rootKey);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         Preference copykey = findPreference("clientkey");
@@ -50,7 +53,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference resetKey = findPreference("resetkey");
         resetKey.setOnPreferenceClickListener(preference -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle("Klíč bude z aplikace odstraněn a budete nutné vložit/vygenerovat nový.");
+            builder.setTitle("Klíč bude z aplikace odstraněn.");
             builder.setPositiveButton("Ok", (dialog, which) -> {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.remove("clientkeyvalue");
@@ -103,6 +106,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
+    /**
+     * požádat server o identifikační klíč
+     * @return
+     */
     public String createKey() {
         APIClient api = new APIClient(getActivity());
         Log.d(TAG, "syncNow: try");

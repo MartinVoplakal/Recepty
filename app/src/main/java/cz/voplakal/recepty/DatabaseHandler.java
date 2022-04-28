@@ -9,6 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ *
+ * Třída pro práci s vestavěnou SQL databází Androidu
+ * {@inheritDoc}
+ */
 public class DatabaseHandler extends SQLiteOpenHelper {
     Context context;
     public static final int DATABASE_VERSION = 9;
@@ -23,10 +28,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-        //3rd argument to be passed is CursorFactory instance
     }
 
-    // Creating Tables      TUTORIÁL: https://www.javatpoint.com/android-sqlite-tutorial
+    // využitý TUTORIÁL: https://www.javatpoint.com/android-sqlite-tutorial
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_RECEPTY + "("
@@ -39,35 +43,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
 
-    // Upgrading database
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEPTY);
-        // Create tables again
-        onCreate(db);
-        //delete pictures, potom celé odebrat
-        File fileOrDirectory = new File("/storage/emulated/0/Android/data/cz.voplakal.recepty/files/Pictures");
-        deleteRecursive(fileOrDirectory);
-    }
-    //delete pictures tohle taky odebrat
-    public void deleteRecursive(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory()) {
-            for (File child : fileOrDirectory.listFiles()) {
-                deleteRecursive(child);
-            }
-        }
-        fileOrDirectory.delete();
-    }
 
     void addRecept(Recept recept) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         recept.insertIn(values, false);
-        // Inserting Row
         db.insert(TABLE_RECEPTY, null, values);
-        //2nd argument is String containing nullColumnHack
-        db.close(); // Closing database connection
+        db.close();
     }
 
     Recept getRecept(long id) {
@@ -82,10 +64,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return new Recept(cursor, false);
     }
 
-    // smaller says if to get picture and postup, zrychlí to tak načítání
+    /**
+     * @param smaller if include pictures and "postup"
+     * @return
+     */
     public ArrayList<Recept> getAllRecepty(boolean smaller) {
         ArrayList<Recept> list = new ArrayList<>();
-        // Select All Query
         String selectQuery;
         if (smaller)
             selectQuery = "SELECT " + ID_KEY + ", " + NAZEV_KEY + ", " + INGREDIENCE_KEY + " FROM " + TABLE_RECEPTY;
@@ -94,11 +78,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-
-                // Adding to list
                 list.add(new Recept(cursor, smaller));
             } while (cursor.moveToNext());
         }
@@ -133,21 +114,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return true;
     }
 
-    public void deleteAll() {
-        SQLiteDatabase db = this.getWritableDatabase();
+    //pouze pro potřeby vývoje, ale je poviné použít
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEPTY);
-
-        // Create tables again
         onCreate(db);
+
+        //smazat obrázky, potom celé odebrat
+        File fileOrDirectory = new File("/storage/emulated/0/Android/data/cz.voplakal.recepty/files/Pictures");
+        deleteRecursive(fileOrDirectory);
     }
-
-    public int getContactsCount() {
-        String countQuery = "SELECT  * FROM " + TABLE_RECEPTY;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        cursor.close();
-
-        // return count
-        return cursor.getCount();
+    //delete pictures tohle taky odebrat
+    public void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        }
+        fileOrDirectory.delete();
     }
 }
