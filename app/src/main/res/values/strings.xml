@@ -29,6 +29,6 @@
     <string name="backup_description" >
 Aby bylo možné v budoucnu vaše data obnovit na jakémkoli jiném zařízení, je potřeba provést jejich zálohu.
 Zkopírujte klíč níže a uložte si ho na bezpečné místo, nebo zadejte svůj vlastní. Berte v potaz, že kdokoli, kdo odhadne,
-nebo jinak zjistí váš klíč bude mít přístup k vaší záloze</string>
+nebo jinak zjistí váš klíč bude mít přístup k vaší záloze. Na server neodesílají obrázky přiožené k receptům. Ty zůstávají stále na vašem zažízení.</string>
 
 </resources>

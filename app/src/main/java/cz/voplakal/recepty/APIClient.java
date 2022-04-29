@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,8 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -125,22 +122,24 @@ public class APIClient {
             jsonParam.put("ingredience", new JSONArray(recept.getIngredienceArr()));
             //if (!recept.getPostup().isEmpty())
             jsonParam.put("postup", recept.getPostup());
-            JSONArray pictures = new JSONArray();
-            if (recept.getPicturePaths().length > 0) {
-                for (String path : recept.getPicturePaths())
-                    try {
-                        pictures.put(getStringImage(path));
-                    } catch (Exception e) {
-                        // activity.runOnUiThread(() -> Toast.makeText(activity, "Chyba odesílání obrázků", Toast.LENGTH_LONG).show());
-                    }
-                jsonParam.put("images", pictures);
-            }
+
             if (params.equals("/backup")) {
                 jsonParam.put("id", recept.getId());
                 if (clientKey == null || clientKey.isEmpty())
                     throw new IllegalArgumentException("client key is empty");
                 else
                     jsonParam.put("clientid", clientKey);
+            } else {
+                JSONArray pictures = new JSONArray();
+                if (recept.getPicturePaths().length > 0) {
+                    for (String path : recept.getPicturePaths())
+                        try {
+                            pictures.put(getStringImage(path));
+                        } catch (Exception e) {
+                            // activity.runOnUiThread(() -> Toast.makeText(activity, "Chyba odesílání obrázků", Toast.LENGTH_LONG).show());
+                        }
+                    jsonParam.put("images", pictures);
+                }
             }
             Log.i("MYTAG", jsonParam.toString());
 
@@ -277,9 +276,8 @@ public class APIClient {
 
                     activity.runOnUiThread(() -> {
                         ((MainActivity) activity).loadAndApplyData();
+                        Toast.makeText(activity, "Záloha obnovena", Toast.LENGTH_SHORT).show();
                     });
-                    activity.runOnUiThread(() ->
-                            Toast.makeText(activity, "Záloha obnovena", Toast.LENGTH_SHORT).show());
                 }
             } catch (JSONException e) {
                 Log.d(TAG, "restoreBackup: " + e);
@@ -293,33 +291,17 @@ public class APIClient {
 
     /**
      * převede a vrátí obrázek v podobě stringu
+     *
      * @param path absolutní cesta k souboru
      * @return picture in strig format
      */
     private String getStringImage(String path) {
         Bitmap bmp = BitmapFactory.decodeFile(path);   //zdroj: https://stackoverflow.com/questions/43574357/how-to-send-image-as-post-in-android-studio
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
-    }
-
-    private String saveImageFromString(String str) throws IOException {
-        String imageFileName = "JPEG_11_";
-        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */ //temp file >> na konci je ještě automatický kus názvu
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        byte[] bytes = Base64.decode(str, Base64.DEFAULT);
-        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        FileOutputStream fOut = new FileOutputStream(image);
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-        fOut.flush();
-        fOut.close();
-        return image.getAbsolutePath();
     }
 
 }

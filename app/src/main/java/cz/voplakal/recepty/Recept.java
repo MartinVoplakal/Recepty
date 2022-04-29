@@ -45,8 +45,9 @@ public class Recept {
 
     /**
      * Usnadňuje vytvoření tohoto objektu přímo při čtení z databáze
+     *
      * @param cursor
-     * @param small pokdy je true vloží pouze natev a ingredience
+     * @param small  pokdy je true vloží pouze natev a ingredience
      */
     public Recept(Cursor cursor, boolean small) {
         this.id = cursor.getInt(0);
@@ -54,11 +55,12 @@ public class Recept {
         this.ingredience = derialize(cursor.getString(2));
         if (small) return;
         this.postup = cursor.getString(3);
-        this.picturePaths = derialize(cursor.getString(4));
+        String paths = cursor.getString(4);
+        if (paths != null)
+            this.picturePaths = derialize(paths);
     }
 
     /**
-     *
      * @param values objekt do kterého data vložit
      * @param withId jestli použít i ID receptu
      * @return ContentValues připravená data do objektu pro vložení do databáze
@@ -69,10 +71,10 @@ public class Recept {
         values.put(POSTUP_KEY, getPostup());
         if (withId)
             values.put(ID_KEY, getId());
-        values.put(PICTURE_KEY, serialize(picturePaths));
+        if (picturePaths.length > 0)
+            values.put(PICTURE_KEY, serialize(picturePaths));
         return values;
     }
-
 
 
     String ARRAY_DIVIDER = "#gyarab684as";

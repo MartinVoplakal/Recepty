@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
     Context context;
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 11;
     public static final String DATABASE_NAME = "Recepty.db";
     public static final String TABLE_RECEPTY = "recepty";
     public static final String ID_KEY = "id";
