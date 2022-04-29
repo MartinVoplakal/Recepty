@@ -204,10 +204,6 @@ public class APIClient {
                 activity.runOnUiThread(() -> Toast.makeText(activity, "Odesílání více než 3 obrázky. To může chvíli trvat", Toast.LENGTH_LONG).show());
 
             String res = postRecept(recept, "/share", null);
-            if (res == null) {
-                activity.runOnUiThread(() -> Toast.makeText(activity, "Odesílání selhalo", Toast.LENGTH_LONG).show());
-                return;
-            }
 
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
